@@ -71,6 +71,7 @@ function initial() {
 
 require('./app/routes/auth.routes')(app);
 require('./app/routes/user.routes')(app);
+require('./app/routes/task.routes')(app);
 
 // simple route
 app.get("/", (req, res) => {
