@@ -1,0 +1,30 @@
+{
+  "name": "sachivalayam-backend",
+  "version": "1.0.0",
+  "description": "Sachivalayam is a task reporting system",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yashodeepk/Sachivalayam-Backend.git"
+  },
+  "keywords": [
+    "sachivalayam",
+    "reporting"
+  ],
+  "author": "yashodeep",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/yashodeepk/Sachivalayam-Backend/issues"
+  },
+  "homepage": "https://github.com/yashodeepk/Sachivalayam-Backend#readme",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.0",
+    "mongoose": "^6.9.1"
+  }
+}
