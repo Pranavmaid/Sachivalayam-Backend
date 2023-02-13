@@ -4,6 +4,7 @@ const Task = mongoose.model(
   "Task",
   new mongoose.Schema({
     task_name: String,
+    task_status:String,
     from_work_area: String,
     to_work_area: String,
     assigned_worker: Array,
