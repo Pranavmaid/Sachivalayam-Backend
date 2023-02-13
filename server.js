@@ -35,36 +35,47 @@ db.mongoose
 
 function initial() {
     Role.estimatedDocumentCount((err, count) => {
-        if (!err && count === 0) {
-        new Role({
-            name: "secretary"
-        }).save(err => {
-            if (err) {
-            console.log("error", err);
-            }
+        if (!err && count === 0) 
+        {
+          new Role({
+              name: "secretary"
+          }).save(err => {
+              if (err) {
+              console.log("error", err);
+              }
 
-            console.log("added 'secretary' to roles collection");
-        });
+              console.log("added 'secretary' to roles collection");
+          });
 
-        new Role({
-            name: "worker"
-        }).save(err => {
-            if (err) {
-            console.log("error", err);
-            }
+          new Role({
+              name: "worker"
+          }).save(err => {
+              if (err) {
+              console.log("error", err);
+              }
 
-            console.log("added 'worker' to roles collection");
-        });
+              console.log("added 'worker' to roles collection");
+          });
 
-        new Role({
-            name: "admin"
-        }).save(err => {
-            if (err) {
-            console.log("error", err);
-            }
+          new Role({
+              name: "admin"
+          }).save(err => {
+              if (err) {
+              console.log("error", err);
+              }
 
-            console.log("added 'admin' to roles collection");
-        });
+              console.log("added 'admin' to roles collection");
+          });
+
+          new Role({
+              name: "sanitaryInspector"
+          }).save(err => {
+              if (err) {
+              console.log("error", err);
+              }
+
+              console.log("added 'sanitary inspector' to roles collection");
+          });
         }
     });
 }
@@ -72,6 +83,7 @@ function initial() {
 require('./app/routes/auth.routes')(app);
 require('./app/routes/user.routes')(app);
 require('./app/routes/task.routes')(app);
+require('./app/routes/zone.routes')(app);
 
 // simple route
 app.get("/", (req, res) => {
