@@ -3,6 +3,8 @@ const db = require("../models");
 const User = db.user;
 const Role = db.role;
 
+const send = require("../services/responseServices.js");
+
 var jwt = require("jsonwebtoken");
 var bcrypt = require("bcryptjs");
 
@@ -21,7 +23,7 @@ exports.signup = (req, res) => {
 
   user.save((err, user) => {
     if (err) {
-      res.status(500).send({ message: err });
+      send.response(res, err, [], 500);
       return;
     }
 
@@ -32,35 +34,35 @@ exports.signup = (req, res) => {
         },
         (err, roles) => {
           if (err) {
-            res.status(500).send({ message: err });
+            send.response(res, err, [], 500);
             return;
           }
 
           user.roles = roles.map((role) => role._id);
           user.save((err, updatedUser) => {
             if (err) {
-              res.status(500).send({ message: err });
+              send.response(res, err, [], 500);
               return;
             }
-            res.send({ message: "User was registered successfully!" });
+            send.response(res, "success", [updatedUser], 200);
           });
         }
       );
     } else {
       Role.findOne({ name: "worker" }, (err, role) => {
         if (err) {
-          res.status(500).send({ message: err });
+          send.response(res, err, [], 500);
           return;
         }
 
         user.roles = [role._id];
-        user.save((err) => {
+        user.save((err, worker) => {
           if (err) {
-            res.status(500).send({ message: err });
+            send.response(res, err, [], 500);
             return;
           }
 
-          res.send({ message: "Worker was registered successfully!" });
+          send.response(res, "success", [worker], 200);
         });
       });
     }
@@ -74,12 +76,13 @@ exports.signin = (req, res) => {
     .populate("roles", "-__v")
     .exec((err, user) => {
       if (err) {
-        res.status(500).send({ message: err });
+        send.response(res, err, [], 500);
         return;
       }
 
       if (!user) {
-        return res.status(404).send({ message: "User Not found." });
+        send.response(res, "User Not found.", [], 404);
+        return;
       }
 
       var passwordIsValid = bcrypt.compareSync(
@@ -88,14 +91,12 @@ exports.signin = (req, res) => {
       );
 
       if (!passwordIsValid) {
-        return res.status(401).send({
-          accessToken: null,
-          message: "Invalid Password!",
-        });
+        send.response(res, "Invalid Password!", [], 401);
+        return;
       }
 
       var token = jwt.sign({ id: user.id }, config.secret, {
-        expiresIn: 86400, // 24 hours
+        expiresIn: 604800, // 7 days
       });
 
       var authorities = [];
@@ -103,12 +104,19 @@ exports.signin = (req, res) => {
       for (let i = 0; i < user.roles.length; i++) {
         authorities.push("ROLE_" + user.roles[i].name.toUpperCase());
       }
-      res.status(200).send({
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        roles: authorities,
-        accessToken: token,
-      });
+      send.response(
+        res,
+        "success",
+        [
+          {
+            id: user._id,
+            name: user.name,
+            email: user.email,
+            roles: authorities,
+            accessToken: token,
+          },
+        ],
+        200
+      );
     });
 };

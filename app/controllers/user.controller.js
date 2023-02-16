@@ -1,46 +1,47 @@
 const UserService = require("../services/userServices");
- 
+const send = require("../services/responseServices.js");
+
 exports.getAllUsers = async (req, res) => {
   try {
     const Users = await UserService.getAllUsers();
-    res.json({ data: Users, status: "success" });
+    send.response(res, "success", Users, 200);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    send.response(res, err, [], 500);
   }
 };
- 
+
 exports.createUser = async (req, res) => {
   try {
     const User = await UserService.createUser(req.body);
-    res.json({ data: User, status: "success" });
+    send.response(res, "success", User, 200);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    send.response(res, err, [], 500);
   }
 };
- 
+
 exports.getUserById = async (req, res) => {
   try {
     const User = await UserService.getUserById(req.params.id);
-    res.json({ data: User, status: "success" });
+    send.response(res, "success", User, 200);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    send.response(res, err, [], 500);
   }
 };
- 
+
 exports.updateUser = async (req, res) => {
   try {
     const User = await UserService.updateUser(req.params.id, req.body);
-    res.json({ data: User, status: "success" });
+    send.response(res, "success", User, 200);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    send.response(res, err, [], 500);
   }
 };
- 
+
 exports.deleteUser = async (req, res) => {
   try {
     const User = await UserService.deleteUser(req.params.id);
-    res.json({ data: User, status: "success" });
+    send.response(res, "success", User, 200);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    send.response(res, err, [], 500);
   }
 };

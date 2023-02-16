@@ -3,17 +3,20 @@ const config = require("../config/auth.config.js");
 const db = require("../models");
 const User = db.user;
 const Role = db.role;
+const send = require("../services/responseServices.js");
 
 verifyToken = (req, res, next) => {
   let token = req.headers["x-access-token"];
 
   if (!token) {
-    return res.status(403).send({ message: "No token provided!" });
+    send.response(res, "No token provided!", [], 403);
+    return;
   }
 
   jwt.verify(token, config.secret, (err, decoded) => {
     if (err) {
-      return res.status(401).send({ message: "Unauthorized!" });
+      send.response(res, "Unauthorized!", [], 401);
+      return;
     }
     req.userId = decoded.id;
     next();
@@ -23,17 +26,17 @@ verifyToken = (req, res, next) => {
 isAdmin = (req, res, next) => {
   User.findById(req.userId).exec((err, user) => {
     if (err) {
-      res.status(500).send({ message: err });
+      send.response(res, err, [], 500);
       return;
     }
 
     Role.find(
       {
-        _id: { $in: user.roles }
+        _id: { $in: user.roles },
       },
       (err, roles) => {
         if (err) {
-          res.status(500).send({ message: err });
+          send.response(res, err, [], 500);
           return;
         }
 
@@ -44,7 +47,7 @@ isAdmin = (req, res, next) => {
           }
         }
 
-        res.status(403).send({ message: "Require Admin Role!" });
+        send.response(res, "Require Admin Role!", [], 403);
         return;
       }
     );
@@ -54,17 +57,17 @@ isAdmin = (req, res, next) => {
 isSecretary = (req, res, next) => {
   User.findById(req.userId).exec((err, user) => {
     if (err) {
-      res.status(500).send({ message: err });
+      send.response(res, err, [], 500);
       return;
     }
 
     Role.find(
       {
-        _id: { $in: user.roles }
+        _id: { $in: user.roles },
       },
       (err, roles) => {
         if (err) {
-          res.status(500).send({ message: err });
+          send.response(res, err, [], 500);
           return;
         }
 
@@ -75,7 +78,7 @@ isSecretary = (req, res, next) => {
           }
         }
 
-        res.status(403).send({ message: "Require secretary Role!" });
+        send.response(res, "Require secretary Role!", [], 403);
         return;
       }
     );
@@ -85,6 +88,6 @@ isSecretary = (req, res, next) => {
 const authJwt = {
   verifyToken,
   isAdmin,
-  isSecretary
+  isSecretary,
 };
 module.exports = authJwt;
