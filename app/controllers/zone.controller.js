@@ -1,46 +1,47 @@
 const ZoneService = require("../services/zoneServices");
- 
+const send = require("../services/responseServices.js");
+
 exports.getAllZones = async (req, res) => {
   try {
     const Zones = await ZoneService.getAllZones();
-    res.json({ data: Zones, status: "success" });
+    send.response(res, "success", Zones, 200);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    send.response(res, err, [], 500);
   }
 };
- 
+
 exports.createZone = async (req, res) => {
   try {
     const Zone = await ZoneService.createZone(req.body);
-    res.json({ data: Zone, status: "success" });
+    send.response(res, "success", Zone, 200);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    send.response(res, err, [], 500);
   }
 };
- 
+
 exports.getZoneById = async (req, res) => {
   try {
     const Zone = await ZoneService.getZoneById(req.params.id);
-    res.json({ data: Zone, status: "success" });
+    send.response(res, "success", Zone, 200);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    send.response(res, err, [], 500);
   }
 };
- 
+
 exports.updateZone = async (req, res) => {
   try {
     const Zone = await ZoneService.updateZone(req.params.id, req.body);
-    res.json({ data: Zone, status: "success" });
+    send.response(res, "success", Zone, 200);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    send.response(res, err, [], 500);
   }
 };
- 
+
 exports.deleteZone = async (req, res) => {
   try {
     const Zone = await ZoneService.deleteZone(req.params.id);
-    res.json({ data: Zone, status: "success" });
+    send.response(res, "success", Zone, 200);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    send.response(res, err, [], 500);
   }
 };
