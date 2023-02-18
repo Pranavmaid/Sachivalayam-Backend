@@ -71,7 +71,7 @@ exports.signup = (req, res) => {
 
 exports.signin = (req, res) => {
   User.findOne({
-    username: req.body.email,
+    email: req.body.username,
   })
     .populate("roles", "-__v")
     .exec((err, user) => {
