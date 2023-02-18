@@ -30,21 +30,18 @@ isAdmin = (req, res, next) => {
       return;
     }
 
-    Role.find(
+    Role.findOne(
       {
-        _id: { $in: user.roles },
+        _id: user.roles,
       },
       (err, roles) => {
         if (err) {
           send.response(res, err, [], 500);
           return;
         }
-
-        for (let i = 0; i < roles.length; i++) {
-          if (roles[i].name === "admin") {
-            next();
-            return;
-          }
+        if (roles.name === "admin") {
+          next();
+          return;
         }
 
         send.response(res, "Require Admin Role!", [], 403);
@@ -61,9 +58,9 @@ isSecretary = (req, res, next) => {
       return;
     }
 
-    Role.find(
+    Role.findOne(
       {
-        _id: { $in: user.roles },
+        _id: user.roles,
       },
       (err, roles) => {
         if (err) {
@@ -71,11 +68,38 @@ isSecretary = (req, res, next) => {
           return;
         }
 
-        for (let i = 0; i < roles.length; i++) {
-          if (roles[i].name === "secretary") {
-            next();
-            return;
-          }
+        if (roles.name === "secretary") {
+          next();
+          return;
+        }
+
+        send.response(res, "Require secretary Role!", [], 403);
+        return;
+      }
+    );
+  });
+};
+
+isSanitaryInspector = (req, res, next) => {
+  User.findById(req.userId).exec((err, user) => {
+    if (err) {
+      send.response(res, err, [], 500);
+      return;
+    }
+
+    Role.findOne(
+      {
+        _id: user.roles,
+      },
+      (err, roles) => {
+        if (err) {
+          send.response(res, err, [], 500);
+          return;
+        }
+
+        if (roles.name === "sanitaryInspector") {
+          next();
+          return;
         }
 
         send.response(res, "Require secretary Role!", [], 403);
@@ -89,5 +113,6 @@ const authJwt = {
   verifyToken,
   isAdmin,
   isSecretary,
+  isSanitaryInspector,
 };
 module.exports = authJwt;

@@ -26,25 +26,25 @@ exports.signup = (req, res) => {
       send.response(res, err, [], 500);
       return;
     }
-
     if (req.body.roles) {
-      Role.find(
+      console.log(req.body.roles);
+      Role.findOne(
         {
-          name: { $in: req.body.roles },
+          name: req.body.roles,
         },
         (err, roles) => {
+          console.log(roles);
           if (err) {
             send.response(res, err, [], 500);
             return;
           }
-
-          user.roles = roles.map((role) => role._id);
+          user.roles = roles._id;
           user.save((err, updatedUser) => {
             if (err) {
               send.response(res, err, [], 500);
               return;
             }
-            send.response(res, "success", [updatedUser], 200);
+            send.response(res, "success", updatedUser, 200);
           });
         }
       );
@@ -62,7 +62,7 @@ exports.signup = (req, res) => {
             return;
           }
 
-          send.response(res, "success", [worker], 200);
+          send.response(res, "success", worker, 200);
         });
       });
     }
@@ -99,23 +99,25 @@ exports.signin = (req, res) => {
         expiresIn: 604800, // 7 days
       });
 
-      var authorities = [];
+      var authorities = "";
 
-      for (let i = 0; i < user.roles.length; i++) {
-        authorities.push("ROLE_" + user.roles[i].name.toUpperCase());
-      }
+      authorities = "ROLE_" + user.roles.name.toUpperCase();
       send.response(
         res,
         "success",
-        [
-          {
-            id: user._id,
-            name: user.name,
-            email: user.email,
-            roles: authorities,
-            accessToken: token,
-          },
-        ],
+        {
+          id: user._id,
+          name: user.name,
+          email: user.email,
+          phone: user.phone,
+          ward: user.ward,
+          zone: user.zone,
+          sachivalyam: user.sachivalyam,
+          gender: user.gender,
+          age: user.age,
+          roles: authorities,
+          accessToken: token,
+        },
         200
       );
     });
