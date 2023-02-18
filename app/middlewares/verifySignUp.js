@@ -24,16 +24,14 @@ checkDuplicateEmail = (req, res, next) => {
 
 checkRolesExisted = (req, res, next) => {
   if (req.body.roles) {
-    for (let i = 0; i < req.body.roles.length; i++) {
-      if (!ROLES.includes(req.body.roles[i])) {
-        send.response(
-          res,
-          `Failed! Role ${req.body.roles[i]} does not exist!`,
-          [],
-          400
-        );
-        return;
-      }
+    if (!ROLES.includes(req.body.roles)) {
+      send.response(
+        res,
+        `Failed! Role ${req.body.roles} does not exist!`,
+        [],
+        400
+      );
+      return;
     }
   }
 
