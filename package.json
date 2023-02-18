@@ -2,8 +2,9 @@
   "name": "sachivalayam-backend",
   "version": "1.0.0",
   "description": "Sachivalayam is a task reporting system",
-  "main": "server.js",
+  "main": "server.js","type": "module",
   "scripts": {
+    "start": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
