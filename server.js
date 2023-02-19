@@ -288,6 +288,7 @@ const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}.`);
 });
+app.use("/task_images", express.static("TaskImages"));
 
 // const excelToJson = async (filePath) => {
 //   const wb = XLSX.readFile(filePath);

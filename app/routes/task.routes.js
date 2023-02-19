@@ -7,6 +7,7 @@ const {
   deleteTask,
   getTaskName,
 } = require("../controllers/task.controller");
+const { getAddNewTaskDetails } = require("../controllers/combine.controller");
 const { authJwt } = require("../middlewares");
 const multer = require("multer");
 const folderConfig = require("../config/folder.config");
@@ -72,6 +73,12 @@ module.exports = function (app) {
   );
 
   app.get("/api/task_by_id/:id", [authJwt.verifyToken], getTaskById);
+
+  app.get(
+    "/api/getAddNewTaskDetails",
+    [authJwt.verifyToken],
+    getAddNewTaskDetails
+  );
 
   app.delete("/api/task/:id", [authJwt.verifyToken], deleteTask);
 };

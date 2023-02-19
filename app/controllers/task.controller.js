@@ -43,6 +43,13 @@ exports.createTask = async (req, res) => {
     send.response(res, "Please send before images", {}, 404);
     return;
   }
+  var imageLink = [];
+  for (const iterator of req.body.before_image) {
+    imageLink.push(
+      `https://sachivalayam-backend.onrender.com/task_images/${iterator}`
+    );
+  }
+  req.body.before_image = imageLink;
   try {
     const Task = await TaskService.createTask(req.body);
     send.response(res, "success", Task, 200);
@@ -65,10 +72,17 @@ exports.updateTask = async (req, res) => {
     send.response(res, "No data found", {}, 404);
     return;
   }
-  if (req.body.before_image == null || req.body.before_image.length == 0) {
+  if (req.body.after_image == null || req.body.after_image.length == 0) {
     send.response(res, "Please send after images also", {}, 404);
     return;
   }
+  var imageLink = [];
+  for (const iterator of req.body.after_image) {
+    imageLink.push(
+      `https://sachivalayam-backend.onrender.com/task_images/${iterator}`
+    );
+  }
+  req.body.after_image = imageLink;
   try {
     const Task = await TaskService.updateTask(req.params.id, req.body);
     send.response(res, "success", Task, 200);

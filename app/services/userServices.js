@@ -1,5 +1,6 @@
 const UserModel = require("../models/user.model");
 const RoleModel = require("../models/role.model");
+const { ObjectId } = require("mongodb");
 
 exports.getAllUsers = async () => {
   return await UserModel.find();
@@ -26,6 +27,10 @@ exports.deleteUser = async (id) => {
 };
 
 exports.getAllWorkersOfSupervisor = async (id) => {
+  console.log(id);
   let workerRole = await RoleModel.findOne({ name: "worker" });
-  return await UserModel.find({ roles: workerRole._id, supervisor: id });
+  return await UserModel.find({
+    roles: workerRole._id,
+    supervisor: ObjectId(id),
+  });
 };

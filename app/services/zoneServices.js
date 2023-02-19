@@ -1,4 +1,6 @@
 const ZoneModel = require("../models/zone.model");
+const UserModel = require("../models/user.model");
+const { ObjectId } = require("mongodb");
 
 exports.getAllZones = async () => {
   return await ZoneModel.find();
@@ -17,4 +19,40 @@ exports.updateZone = async (id, zone) => {
 
 exports.deleteZone = async (id) => {
   return await ZoneModel.findByIdAndDelete(id);
+};
+
+exports.getAssignedWorkAreas = async (id) => {
+  let user = await UserModel.findOne({ _id: ObjectId(id) });
+  return await ZoneModel.aggregate([
+    {
+      $match: {
+        _id: ObjectId(user.zone),
+      },
+    },
+    {
+      $unwind: {
+        path: "$ward",
+      },
+    },
+    {
+      $match: {
+        "ward._id": ObjectId(user.ward),
+      },
+    },
+    {
+      $unwind: {
+        path: "$ward.sachivalyam",
+      },
+    },
+    {
+      $match: {
+        "ward.sachivalyam._id": ObjectId(user.sachivalyam),
+      },
+    },
+    {
+      $project: {
+        workArea: "$ward.sachivalyam.areas",
+      },
+    },
+  ]);
 };
