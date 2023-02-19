@@ -7,6 +7,7 @@ const send = require("../services/responseServices.js");
 
 var jwt = require("jsonwebtoken");
 var bcrypt = require("bcryptjs");
+const Zone = require("../models/zone.model");
 
 exports.signup = (req, res) => {
   if (
@@ -34,74 +35,130 @@ exports.signup = (req, res) => {
     sachivalyam: req.body.sachivalyam,
     gender: req.body.gender,
     age: req.body.age,
+    supervisor : req.body.supervisor
   });
 
-  user.save((err, user) => {
-    if (err) {
-      send.response(res, err, [], 500);
-      return;
-    }
-    if (req.body.roles) {
-      console.log(req.body.roles);
-      Role.findOne(
+  if (req.body.roles) {
+    console.log(req.body.roles);
+    Role.findOne(
+      {
+        name: req.body.roles,
+      },
+      (err, roles) => {
+        console.log(roles);
+        if (err) {
+          send.response(res, err, [], 500);
+          return;
+        }
+        user.roles = roles._id;
+        if(req.body.zone)
         {
-          name: req.body.roles,
-        },
-        (err, roles) => {
-          console.log(roles);
-          if (err) {
-            send.response(res, err, [], 500);
-            return;
-          }
-          user.roles = roles._id;
-          user.save((err, updatedUser) => {
-            if (err) {
+          console.log(req.body.zone);
+          Zone.findOne({
+            name: req.body.zone,
+          }, (err, zone) => {
+            if(err) {
               send.response(res, err, [], 500);
               return;
             }
-            updatedUser.roles = "ROLE_" + roles.name.toUpperCase();
-            send.response(
-              res,
-              "success",
-              {
-                name: updatedUser.name,
-                email: updatedUser.email,
-                phone: updatedUser.phone,
-                ward: updatedUser.ward,
-                zone: updatedUser.zone,
-                sachivalyam: updatedUser.sachivalyam,
-                gender: updatedUser.gender,
-                age: updatedUser.age,
-                workingSlots: updatedUser.workingSlots,
-                _id: updatedUser._id,
-                createdAt: updatedUser.createdAt,
-                updatedAt: updatedUser.updatedAt,
-                roles: "ROLE_" + roles.name.toUpperCase(),
-              },
-              200
-            );
-          });
+            user.zone = zone._id;
+            if(req.body.ward)
+            {
+              Zone.aggregate([
+                {
+                  '$unwind': {
+                    'path': '$ward'
+                  }
+                }, {
+                  '$match': {
+                    'ward.name': req.body.ward
+                  }
+                }, {
+                  '$unwind': {
+                    'path': '$ward.sachivalyam'
+                  }
+                }, {
+                  '$match': {
+                    'ward.sachivalyam.name': req.body.sachivalyam
+                  }
+                }, {
+                  '$project': {
+                    'wardid': '$ward._id',
+                    'wardname': '$ward.name', 
+                    'sachivalyamid': '$ward.sachivalyam._id',
+                    'sachivalyamname':'$ward.sachivalyam.name',
+                  }
+                }
+              ], (err, ward) => {
+                if(err) {
+                  send.response(res, err, [], 500);
+                  return;
+                } 
+
+                if(ward.length <= 0)
+                {
+                  send.response(res, "Ward or sachivalyam not found", [], 500);
+                  return;
+                }
+
+                user.ward = ward[0].wardid;
+                user.sachivalyam = ward[0].sachivalyamid;
+
+                user.save((err, updatedUser) => {
+                  if (err) {
+                    send.response(res, err, [], 500);
+                    return;
+                  }
+                  updatedUser.roles = "ROLE_" + roles.name.toUpperCase();
+                  updatedUser.ward = ward[0].wardname;
+                  updatedUser.sachivalyam = ward[0].sachivalyamname;
+                  updatedUser.zone = zone.name;
+                  send.response(
+                    res,
+                    "success",
+                    {
+                      name: updatedUser.name,
+                      email: updatedUser.email,
+                      phone: updatedUser.phone,
+                      ward: updatedUser.ward,
+                      zone: updatedUser.zone,
+                      sachivalyam: updatedUser.sachivalyam,
+                      gender: updatedUser.gender,
+                      age: updatedUser.age,
+                      workingSlots: updatedUser.workingSlots,
+                      _id: updatedUser._id,
+                      createdAt: updatedUser.createdAt,
+                      updatedAt: updatedUser.updatedAt,
+                      roles: "ROLE_" + roles.name.toUpperCase(),
+                    },
+                    200
+                  );
+                });
+          
+              })
+            }
+          })
         }
-      );
-    } else {
-      Role.findOne({ name: "worker" }, (err, role) => {
+      }
+    );
+  } else {
+    Role.findOne({ name: "worker" }, (err, role) => {
+      if (err) {
+        send.response(res, err, [], 500);
+        return;
+      }
+
+      user.roles = [role._id];
+      user.save((err, worker) => {
         if (err) {
           send.response(res, err, [], 500);
           return;
         }
 
-        user.roles = [role._id];
-        user.save((err, worker) => {
-          if (err) {
-            send.response(res, err, [], 500);
-            return;
-          }
-
-          send.response(res, "success", worker, 200);
-        });
+        send.response(res, "success", worker, 200);
       });
-    }
-  });
+    });
+  }
 };
 
 exports.signin = (req, res) => {

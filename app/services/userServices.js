@@ -24,3 +24,8 @@ exports.updateUser = async (id, user) => {
 exports.deleteUser = async (id) => {
   return await UserModel.findByIdAndDelete(id);
 };
+
+exports.getAllWorkersOfSupervisor = async (id) => {
+  let workerRole = await RoleModel.findOne({ name: "worker" });
+  return await UserModel.find({ roles: workerRole._id, supervisor: id });
+};
