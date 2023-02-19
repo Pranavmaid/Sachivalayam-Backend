@@ -3,6 +3,7 @@ const cors = require("cors");
 const dbConfig = require("./app/config/db.config");
 const folderConfig = require("./app/config/folder.config");
 const fs = require("fs");
+const XLSX = require("xlsx");
 
 const app = express();
 
@@ -20,6 +21,8 @@ app.use(express.urlencoded({ extended: true }));
 
 const db = require("./app/models");
 const Role = db.role;
+const TaskDetails = db.taskDetails;
+const Zones = db.zone;
 
 db.mongoose
   .connect(dbConfig.URL, {
@@ -29,7 +32,9 @@ db.mongoose
   .then(() => {
     console.log("Successfully connect to MongoDB.");
     initial();
+    createBasicTask();
     generateFolders();
+    createZone();
   })
   .catch((err) => {
     console.error("Connection error", err);
@@ -82,6 +87,177 @@ function initial() {
   });
 }
 
+function createBasicTask() {
+  TaskDetails.estimatedDocumentCount((err, count) => {
+    if (!err && count === 0) {
+      new TaskDetails({
+        task_name: "Drain Cleaning",
+      }).save((err) => {
+        if (err) {
+          console.log("error", err);
+        }
+
+        console.log("added 'Drain Cleaning' to task details collection");
+      });
+
+      new TaskDetails({
+        task_name: "Sweeping",
+      }).save((err) => {
+        if (err) {
+          console.log("error", err);
+        }
+
+        console.log("added 'Sweeping' to task details collection");
+      });
+
+      new TaskDetails({
+        task_name: "Litter Cleaning",
+      }).save((err) => {
+        if (err) {
+          console.log("error", err);
+        }
+
+        console.log("added 'Litter Cleaning' to task details collection");
+      });
+
+      new TaskDetails({
+        task_name: "Door to Door garbage Collection",
+      }).save((err) => {
+        if (err) {
+          console.log("error", err);
+        }
+
+        console.log(
+          "added 'Door to Door garbage Collection' to task details collection"
+        );
+      });
+    }
+  });
+}
+
+function createZone() {
+  Zones.estimatedDocumentCount((err, count) => {
+    if (!err && count === 0) {
+      new Zones({
+        name: "1",
+        ward: [
+          {
+            name: "1",
+            sachivalyam: [
+              {
+                name: "CHITTIVALASA",
+                sachivalyam_no: "21089001",
+                areas: [
+                  {
+                    name: "VEMAPDA VEEDHI",
+                  },
+                  {
+                    name: "PRIMARY SCHOOL",
+                  },
+                  {
+                    name: "AMBEDAKR STATUE",
+                  },
+                  {
+                    name: "ANNA CANTEEN",
+                  },
+                  {
+                    name: "OPP RAMULAMMA THEATER",
+                  },
+                  {
+                    name: "BOYS HOSTEL",
+                  },
+                  {
+                    name: "NEW COLONY",
+                  },
+                  {
+                    name: "HIGH SCHOOL",
+                  },
+                  {
+                    name: "PUMPHOUSE ROAD",
+                  },
+                  {
+                    name: "KONDAPETA COLONY",
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            name: "2",
+            sachivalyam: [
+              {
+                name: "ADARSANAGAR 1",
+                sachivalyam_no: "21089013",
+                areas: [
+                  {
+                    name: "SHED LINE",
+                  },
+                  {
+                    name: "NTR PARK",
+                  },
+                  {
+                    name: "SABBIVANIPETA",
+                  },
+                  {
+                    name: "ANDHRA BANK",
+                  },
+                  {
+                    name: "KUMMARI VEEDHI",
+                  },
+                  {
+                    name: "MEE SEVA AREA",
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      }).save((err) => {
+        if (err) {
+          console.log("error", err);
+        }
+
+        console.log("added '1' to zone collection");
+      });
+
+      new Zones({
+        name: "2",
+        ward: [
+          {
+            name: "5",
+            sachivalyam: [
+              {
+                name: "Ayodhya Nagar",
+                sachivalyam_no: "1086072",
+                areas: [
+                  {
+                    name: "ysr nagar type 2 block-14",
+                  },
+                  {
+                    name: "ysr nagar type 2 block29",
+                  },
+                  {
+                    name: "ysr nagar type 2 block-28",
+                  },
+                  {
+                    name: "ysr nagar type 2 block-38",
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      }).save((err) => {
+        if (err) {
+          console.log("error", err);
+        }
+
+        console.log("added '1' to zone collection");
+      });
+    }
+  });
+}
+
 function generateFolders() {
   try {
     if (!fs.existsSync(`./${folderConfig.TASK_FOLDER}`)) {
@@ -112,3 +288,44 @@ const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}.`);
 });
+
+// const excelToJson = async (filePath) => {
+//   const wb = XLSX.readFile(filePath);
+//   const ws = wb.Sheets["Sheet1"];
+//   const data = XLSX.utils.sheet_to_json(ws);
+//   var filteredData = [];
+//   var zone = null;
+//   var wardNo = null;
+//   var sachivalyamName = null;
+//   var ward = [];
+//   var sachivalyam = [];
+//   var area = [];
+//   for (const iterator of data) {
+//     if (iterator.Zone != undefined) {
+//       if (iterator.Zone != zone) {
+//         // filteredData.push({
+//         //   name:zone,
+//         //   ward: ward,
+//         // })
+//         zone = iterator.Zone;
+//         ward.push(iterator.WardNo);
+//         sachivalyam.push(iterator.Sachiwalayam);
+//         area.push(iterator.Area);
+//       } else {
+//         if (iterator.WardNo != wardNo) {
+//         } else {
+//           sachivalyamName = iterator.Sachiwalayam;
+//           area.push(iterator.Area);
+//         }
+//       }
+//     } else {
+//       area.push(iterator.Area);
+//     }
+//   }
+//   console.log(data);
+//   // console.log(data[0].LineNo);
+
+//   return data;
+// };
+
+// excelToJson(`./Excels/GVMC.xlsx`);

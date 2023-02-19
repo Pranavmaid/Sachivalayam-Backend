@@ -9,13 +9,13 @@ verifyToken = (req, res, next) => {
   let token = req.headers["x-access-token"];
 
   if (!token) {
-    send.response(res, "No token provided!", [], 403);
+    send.response(res, "No token provided!", {}, 403);
     return;
   }
 
   jwt.verify(token, config.secret, (err, decoded) => {
     if (err) {
-      send.response(res, "Unauthorized!", [], 401);
+      send.response(res, "Unauthorized!", {}, 401);
       return;
     }
     req.userId = decoded.id;
@@ -26,7 +26,7 @@ verifyToken = (req, res, next) => {
 isAdmin = (req, res, next) => {
   User.findById(req.userId).exec((err, user) => {
     if (err) {
-      send.response(res, err, [], 500);
+      send.response(res, err, {}, 500);
       return;
     }
 
@@ -36,7 +36,7 @@ isAdmin = (req, res, next) => {
       },
       (err, roles) => {
         if (err) {
-          send.response(res, err, [], 500);
+          send.response(res, err, {}, 500);
           return;
         }
         if (roles.name === "admin") {
@@ -54,7 +54,7 @@ isAdmin = (req, res, next) => {
 isSecretary = (req, res, next) => {
   User.findById(req.userId).exec((err, user) => {
     if (err) {
-      send.response(res, err, [], 500);
+      send.response(res, err, {}, 500);
       return;
     }
 
@@ -64,7 +64,7 @@ isSecretary = (req, res, next) => {
       },
       (err, roles) => {
         if (err) {
-          send.response(res, err, [], 500);
+          send.response(res, err, {}, 500);
           return;
         }
 
@@ -73,7 +73,7 @@ isSecretary = (req, res, next) => {
           return;
         }
 
-        send.response(res, "Require secretary Role!", [], 403);
+        send.response(res, "Require secretary Role!", {}, 403);
         return;
       }
     );
@@ -83,7 +83,7 @@ isSecretary = (req, res, next) => {
 isSanitaryInspector = (req, res, next) => {
   User.findById(req.userId).exec((err, user) => {
     if (err) {
-      send.response(res, err, [], 500);
+      send.response(res, err, {}, 500);
       return;
     }
 
@@ -93,7 +93,7 @@ isSanitaryInspector = (req, res, next) => {
       },
       (err, roles) => {
         if (err) {
-          send.response(res, err, [], 500);
+          send.response(res, err, {}, 500);
           return;
         }
 
@@ -102,7 +102,7 @@ isSanitaryInspector = (req, res, next) => {
           return;
         }
 
-        send.response(res, "Require secretary Role!", [], 403);
+        send.response(res, "Require secretary Role!", {}, 403);
         return;
       }
     );

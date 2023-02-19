@@ -10,6 +10,15 @@ exports.getAllUsers = async (req, res) => {
   }
 };
 
+exports.getAllWorkers = async (req, res) => {
+  try {
+    const Users = await UserService.getAllWorkers();
+    send.response(res, "success", Users, 200);
+  } catch (err) {
+    send.response(res, err, [], 500);
+  }
+};
+
 exports.createUser = async (req, res) => {
   try {
     const User = await UserService.createUser(req.body);

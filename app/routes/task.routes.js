@@ -1,9 +1,11 @@
 const {
   getAllTasks,
+  getTodaysTasks,
   createTask,
   getTaskById,
   updateTask,
   deleteTask,
+  getTaskName,
 } = require("../controllers/task.controller");
 const { authJwt } = require("../middlewares");
 const multer = require("multer");
@@ -38,7 +40,13 @@ module.exports = function (app) {
     next();
   });
 
-  app.get("/api/task", [authJwt.verifyToken], getAllTasks);
+  app.get("/api/task/:id", [authJwt.verifyToken], getAllTasks);
+
+  //get todays task and task status count
+  app.get("/api/todays_task/:id", [authJwt.verifyToken], getTodaysTasks);
+
+  //get todays task and task status count
+  app.get("/api/task_names", [authJwt.verifyToken], getTaskName);
 
   /* imageUpload.array("images", 30), contains max no of images and key to find images file location
     In bellow example i have put max no of images to 30 and key as "images" to upload images key needs 
