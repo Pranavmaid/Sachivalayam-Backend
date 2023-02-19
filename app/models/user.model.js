@@ -15,7 +15,7 @@ const User = mongoose.model(
       age: Number,
       workingSlots: { type: Array, default: [] },
       roles: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId, //["secretary", "admin", "worker", "sanitaryInspector"]
         ref: "Role",
       },
     },

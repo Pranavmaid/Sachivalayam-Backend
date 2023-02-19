@@ -1,7 +1,82 @@
 const TaskModel = require("../models/task.model");
+const TaskDetailsModel = require("../models/taskDetails.model");
+const { ObjectId } = require("mongodb");
 
-exports.getAllTasks = async () => {
-  return await TaskModel.find();
+exports.getAllTasks = async (id) => {
+  return await TaskModel.find({
+    assigners_id: id,
+  }).sort({ createdAt: -1 });
+};
+
+exports.getTodaysTasks = async (id) => {
+  var start = new Date();
+  var s = start.setHours(0, 0, 0, 0);
+  let statusCount = await TaskModel.aggregate([
+    {
+      $match: {
+        assigners_id: ObjectId(id),
+        createdAt: {
+          $gte: new Date(s),
+        },
+      },
+    },
+    {
+      $group: {
+        _id: "$task_status",
+        count: {
+          $count: {},
+        },
+      },
+    },
+  ]);
+  var totalTasks = 0;
+  var OngoingTasks = 0;
+  var InReviewTasks = 0;
+  var CompletedTasks = 0;
+  for (const iterator of statusCount) {
+    totalTasks = totalTasks + iterator.count;
+    if (iterator._id == "Completed") {
+      CompletedTasks = CompletedTasks + iterator.count;
+    } else if (iterator._id == "Ongoing") {
+      OngoingTasks = OngoingTasks + iterator.count;
+    } else if (iterator._id == "In-review") {
+      InReviewTasks = InReviewTasks + iterator.count;
+    }
+  }
+  let TaskList = await TaskModel.find({
+    assigners_id: id,
+    createdAt: { $gte: new Date(s) },
+  }).sort({ createdAt: -1 });
+  return {
+    totaltask: totalTasks,
+    completed: CompletedTasks,
+    ongoing: OngoingTasks,
+    inreview: InReviewTasks,
+    tasks: TaskList,
+  };
+};
+
+exports.getAllTaskNames = async () => {
+  let taskNames = await TaskDetailsModel.aggregate([
+    {
+      $sort: {
+        createdAt: 1,
+      },
+    },
+    {
+      $group: {
+        _id: "$__v",
+        taskList: {
+          $push: "$task_name",
+        },
+      },
+    },
+  ]);
+  var taskNamesList = [];
+  for (const iterator of taskNames) {
+    taskNamesList = iterator.taskList;
+  }
+  return taskNamesList;
 };
 
 exports.createTask = async (task) => {

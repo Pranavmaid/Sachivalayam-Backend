@@ -9,6 +9,21 @@ var jwt = require("jsonwebtoken");
 var bcrypt = require("bcryptjs");
 
 exports.signup = (req, res) => {
+  if (
+    req.body.name == null ||
+    req.body.email == null ||
+    req.body.password == null ||
+    req.body.phone == null ||
+    req.body.ward == null ||
+    req.body.zone == null ||
+    req.body.sachivalyam == null ||
+    req.body.gender == null ||
+    req.body.age == null ||
+    req.body.roles == null
+  ) {
+    send.response(res, "Please enter all data for signup process", {}, 403);
+    return;
+  }
   const user = new User({
     name: req.body.name,
     email: req.body.email,
@@ -44,7 +59,27 @@ exports.signup = (req, res) => {
               send.response(res, err, [], 500);
               return;
             }
-            send.response(res, "success", updatedUser, 200);
+            updatedUser.roles = "ROLE_" + roles.name.toUpperCase();
+            send.response(
+              res,
+              "success",
+              {
+                name: updatedUser.name,
+                email: updatedUser.email,
+                phone: updatedUser.phone,
+                ward: updatedUser.ward,
+                zone: updatedUser.zone,
+                sachivalyam: updatedUser.sachivalyam,
+                gender: updatedUser.gender,
+                age: updatedUser.age,
+                workingSlots: updatedUser.workingSlots,
+                _id: updatedUser._id,
+                createdAt: updatedUser.createdAt,
+                updatedAt: updatedUser.updatedAt,
+                roles: "ROLE_" + roles.name.toUpperCase(),
+              },
+              200
+            );
           });
         }
       );
