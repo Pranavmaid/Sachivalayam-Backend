@@ -71,7 +71,7 @@ module.exports = function (app) {
     updateTask
   );
 
-  app.get("/api/task/:id", [authJwt.verifyToken], getTaskById);
+  app.get("/api/task_by_id/:id", [authJwt.verifyToken], getTaskById);
 
   app.delete("/api/task/:id", [authJwt.verifyToken], deleteTask);
 };
