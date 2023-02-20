@@ -53,7 +53,7 @@ exports.createTask = async (req, res) => {
         `https://sachivalayam-backend.onrender.com/task_images/${iterator}`
       );
     }
-  } else if(typeof req.body.before_image == "object") {
+  } else if(typeof req.body.before_image == "string") {
     imageLink.push(
       `https://sachivalayam-backend.onrender.com/task_images/${req.body.before_image}`
     );
@@ -97,14 +97,14 @@ exports.updateTask = async (req, res) => {
         `https://sachivalayam-backend.onrender.com/task_images/${iterator}`
       );
     }
-  } else if(typeof req.body.after_image == "object") {
+  } else if(typeof req.body.after_image == "string") {
     imageLink.push(
-      `https://sachivalayam-backend.onrender.com/task_images/${req.body.before_image}`
+      `https://sachivalayam-backend.onrender.com/task_images/${req.body.after_image}`
     );
   } else {
     send.response(res, "After Image format not supported", {}, 401);
   }
-  
+
   req.body.after_image = imageLink;
   try {
     const Task = await TaskService.updateTask(req.params.id, req.body);
