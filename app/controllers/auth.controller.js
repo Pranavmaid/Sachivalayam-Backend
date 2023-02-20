@@ -8,6 +8,7 @@ const send = require("../services/responseServices.js");
 var jwt = require("jsonwebtoken");
 var bcrypt = require("bcryptjs");
 const Zone = require("../models/zone.model");
+const { ObjectId } = require("mongodb");
 
 exports.signup = (req, res) => {
   if (
@@ -182,7 +183,7 @@ exports.signin = (req, res) => {
     email: req.body.username,
   })
     .populate("roles", "-__v")
-    .exec((err, user) => {
+    .exec(async (err, user) => {
       if (err) {
         send.response(res, err, [], 500);
         return;
@@ -210,6 +211,42 @@ exports.signin = (req, res) => {
       var authorities = "";
 
       authorities = "ROLE_" + user.roles.name.toUpperCase();
+
+      let zone = await Zone.aggregate([
+        {
+          $match: {
+            _id: ObjectId(user.zone),
+          },
+        },
+        {
+          $unwind: {
+            path: "$ward",
+          },
+        },
+        {
+          $match: {
+            "ward._id": ObjectId(user.ward),
+          },
+        },
+        {
+          $unwind: {
+            path: "$ward.sachivalyam",
+          },
+        },
+        {
+          $match: {
+            "ward.sachivalyam._id": ObjectId(user.sachivalyam),
+          },
+        },
+        {
+          $project: {
+            zonename: "$name",
+            wardname: "$ward.name",
+            sachivalyamname: "$ward.sachivalyam.name",
+          },
+        },
+      ]);
+
       send.response(
         res,
         "success",
@@ -218,9 +255,9 @@ exports.signin = (req, res) => {
           name: user.name,
           email: user.email,
           phone: user.phone,
-          ward: user.ward,
-          zone: user.zone,
-          sachivalyam: user.sachivalyam,
+          ward: zone[0].wardname,
+          zone: zone[0].wardname,
+          sachivalyam: zone[0].sachivalyamname,
           gender: user.gender,
           age: user.age,
           roles: authorities,
