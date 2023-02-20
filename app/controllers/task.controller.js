@@ -13,6 +13,25 @@ exports.getAllTasks = async (req, res) => {
   }
 };
 
+exports.getAllStatusTasks = async (req, res) => {
+  console.log("In get all status tasks");
+  if (req.params.id == null) {
+    send.response(res, "User Id Not Found", {}, 404);
+  }
+
+  try {
+    const Tasks = await TaskService.getAllStatusTasks(req.params.id, req.body.query);
+    if(Tasks.length <= 0)
+    {
+      send.response(res, "Not Data found", Tasks, 301);
+    } else {
+      send.response(res, "success", Tasks, 200);
+    }
+  } catch (err) {
+    send.response(res, err, [], 500);
+  }
+};
+
 exports.getTodaysTasks = async (req, res) => {
   if (req.params.id == null) {
     send.response(res, "User Id Not Found", {}, 404);

@@ -8,6 +8,13 @@ exports.getAllTasks = async (id) => {
   }).sort({ createdAt: -1 });
 };
 
+exports.getAllStatusTasks = async (id, query) => {
+  return await TaskModel.find({
+    assigners_id: id,
+    task_status: query
+  }).sort({ createdAt: -1 });
+};
+
 exports.getTodaysTasks = async (id) => {
   var start = new Date();
   var s = start.setHours(0, 0, 0, 0);
