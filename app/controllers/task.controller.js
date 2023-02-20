@@ -20,17 +20,23 @@ exports.getAllStatusTasks = async (req, res) => {
 
   try {
     const status = ["Completed", "Ongoing" ,"In-review"]
-    
-    if(status.includes(req.params.query))
-    {
-      send.response(res, "Please enter a proper status value", Tasks, 301);
-    }
 
-    const Tasks = await TaskService.getAllStatusTasks(req.params.id, req.params.query);
+    var Tasks = [];
+
+    if(req.query.taskStatus == "all")
+    {
+      Tasks = await TaskService.getAllTasks(req.params.taskStatus);
+    } else {
+      if(!status.includes(req.query.taskStatus))
+      {
+        send.response(res, "Please enter a proper status value", Tasks, 301);
+      }
+      Tasks = await TaskService.getAllStatusTasks(req.params.id, req.query.taskStatus);
+    }
 
     if(Tasks.length <= 0)
     {
-      send.response(res, "Not Data found", Tasks, 201);
+      send.response(res, "Data Not found", Tasks, 200);
     } else {
       send.response(res, "success", Tasks, 200);
     }

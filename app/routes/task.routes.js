@@ -45,7 +45,7 @@ module.exports = function (app) {
   app.get("/api/task/:id", [authJwt.verifyToken], getAllTasks);
 
   app.get(
-    "/api/task_by_status/:id/:query",
+    "/api/task_by_status/:id",
     [authJwt.verifyToken],
     getAllStatusTasks
   );
