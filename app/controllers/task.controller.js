@@ -25,7 +25,7 @@ exports.getAllStatusTasks = async (req, res) => {
 
     if(req.query.taskStatus == "all")
     {
-      Tasks = await TaskService.getAllTasks(req.params.taskStatus);
+      Tasks = await TaskService.getAllTasks(req.params.id);
     } else {
       if(!status.includes(req.query.taskStatus))
       {
