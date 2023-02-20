@@ -46,18 +46,28 @@ exports.createTask = async (req, res) => {
   }
 
   var imageLink = [];
-  for (const iterator of req.body.before_image) {
+  if (typeof req.body.before_image == "object")
+  {
+    for (const iterator of req.body.before_image) {
+      imageLink.push(
+        `https://sachivalayam-backend.onrender.com/task_images/${iterator}`
+      );
+    }
+  } else if(typeof req.body.before_image == "object") {
     imageLink.push(
-      `https://sachivalayam-backend.onrender.com/task_images/${iterator}`
+      `https://sachivalayam-backend.onrender.com/task_images/${req.body.before_image}`
     );
+  } else {
+    send.response(res, "Before Image format not supported", {}, 401);
   }
+
   req.body.before_image = imageLink;
-  try {
-    const Task = await TaskService.createTask(req.body);
-    send.response(res, "success", Task, 200);
-  } catch (err) {
-    send.response(res, err.message, {}, 500);
-  }
+    try {
+      const Task = await TaskService.createTask(req.body);
+      send.response(res, "success", Task, 200);
+    } catch (err) {
+      send.response(res, err.message, {}, 500);
+    }
 };
 
 exports.getTaskById = async (req, res) => {
