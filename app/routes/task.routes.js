@@ -6,7 +6,7 @@ const {
   updateTask,
   deleteTask,
   getTaskName,
-  getAllStatusTasks
+  getAllStatusTasks,
 } = require("../controllers/task.controller");
 const { getAddNewTaskDetails } = require("../controllers/combine.controller");
 const { authJwt } = require("../middlewares");
@@ -25,10 +25,10 @@ const imageStorage = multer.diskStorage({
 const imageUpload = multer({
   storage: imageStorage,
   fileFilter(req, file, cb) {
-    if (!file.originalname.match(/\.(png|jpg)$/)) {
-      // upload only png and jpg format
-      return cb(new Error("Please upload a Image in .png or .jpg format"));
-    }
+    // if (!file.originalname.match(/\.(png|jpg)$/)) {
+    //   // upload only png and jpg format
+    //   return cb(new Error("Please upload a Image in .png or .jpg format"));
+    // }
     cb(undefined, true);
   },
 });
@@ -44,7 +44,11 @@ module.exports = function (app) {
 
   app.get("/api/task/:id", [authJwt.verifyToken], getAllTasks);
 
-  app.get("/api/task_by_status/:id/:query", [authJwt.verifyToken], getAllStatusTasks);
+  app.get(
+    "/api/task_by_status/:id/:query",
+    [authJwt.verifyToken],
+    getAllStatusTasks
+  );
 
   //get todays task and task status count
   app.get("/api/todays_task/:id", [authJwt.verifyToken], getTodaysTasks);
