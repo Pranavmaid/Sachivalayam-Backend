@@ -44,7 +44,7 @@ module.exports = function (app) {
 
   app.get("/api/task/:id", [authJwt.verifyToken], getAllTasks);
 
-  app.get("/api/task_by_status/:id", [authJwt.verifyToken], getAllStatusTasks);
+  app.get("/api/task_by_status/:id/:query", [authJwt.verifyToken], getAllStatusTasks);
 
   //get todays task and task status count
   app.get("/api/todays_task/:id", [authJwt.verifyToken], getTodaysTasks);
