@@ -90,11 +90,21 @@ exports.updateTask = async (req, res) => {
     return;
   }
   var imageLink = [];
-  for (const iterator of req.body.after_image) {
+  if (typeof req.body.after_image == "object")
+  {
+    for (const iterator of req.body.after_image) {
+      imageLink.push(
+        `https://sachivalayam-backend.onrender.com/task_images/${iterator}`
+      );
+    }
+  } else if(typeof req.body.after_image == "object") {
     imageLink.push(
-      `https://sachivalayam-backend.onrender.com/task_images/${iterator}`
+      `https://sachivalayam-backend.onrender.com/task_images/${req.body.before_image}`
     );
+  } else {
+    send.response(res, "After Image format not supported", {}, 401);
   }
+  
   req.body.after_image = imageLink;
   try {
     const Task = await TaskService.updateTask(req.params.id, req.body);
