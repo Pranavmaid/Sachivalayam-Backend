@@ -12,7 +12,7 @@ exports.getAllUsers = async (req, res) => {
 
 exports.getAllWorkers = async (req, res) => {
   try {
-    const Users = await UserService.getAllWorkers();
+    const Users = await UserService.getAllWorkersOfSupervisor(req.userId);
     send.response(res, "success", Users, 200);
   } catch (err) {
     send.response(res, err, [], 500);

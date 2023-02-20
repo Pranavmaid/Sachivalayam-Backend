@@ -39,10 +39,12 @@ exports.createTask = async (req, res) => {
     send.response(res, "No data found", {}, 404);
     return;
   }
+  console.log("received add task request", req.body);
   if (req.body.before_image == null || req.body.before_image.length == 0) {
     send.response(res, "Please send before images", {}, 404);
     return;
   }
+
   var imageLink = [];
   for (const iterator of req.body.before_image) {
     imageLink.push(
@@ -72,6 +74,7 @@ exports.updateTask = async (req, res) => {
     send.response(res, "No data found", {}, 404);
     return;
   }
+  console.log("received update task request", req.body);
   if (req.body.after_image == null || req.body.after_image.length == 0) {
     send.response(res, "Please send after images also", {}, 404);
     return;
