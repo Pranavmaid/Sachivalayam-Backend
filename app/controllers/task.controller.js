@@ -1,5 +1,8 @@
 const TaskService = require("../services/taskServices");
 const send = require("../services/responseServices.js");
+const db = require("../models");
+const User = db.user;
+const Role = db.role;
 
 exports.getAllTasks = async (req, res) => {
   if (req.params.id == null) {
@@ -115,39 +118,65 @@ exports.updateTask = async (req, res) => {
     send.response(res, "No data found", {}, 404);
     return;
   }
-  console.log("received update task request", req.body);
-  if (req.body.task_status == null) {
-    send.response(res, "Please send task status", {}, 404);
-    return;
-  }
-  if (req.body.task_status == "In-review") {
-    if (req.body.after_image == null || req.body.after_image.length == 0) {
-      send.response(res, "Please send after images also", {}, 404);
+  User.findById(req.userId).exec((err, user) => {
+    if (err) {
+      send.response(res, err, {}, 500);
       return;
     }
-    var imageLink = [];
-    if (typeof req.body.after_image == "object") {
-      for (const iterator of req.body.after_image) {
-        imageLink.push(
-          `https://sachivalayam-backend.onrender.com/task_images/${iterator}`
-        );
-      }
-    } else if (typeof req.body.after_image == "string") {
-      imageLink.push(
-        `https://sachivalayam-backend.onrender.com/task_images/${req.body.after_image}`
-      );
-    } else {
-      send.response(res, "After Image format not supported", {}, 401);
-    }
 
-    req.body.after_image = imageLink;
-  }
-  try {
-    const Task = await TaskService.updateTask(req.params.id, req.body);
-    send.response(res, "success", Task, 200);
-  } catch (err) {
-    send.response(res, err, [], 500);
-  }
+    Role.findOne(
+      {
+        _id: user.roles,
+      },
+      async (err, roles) => {
+        if (err) {
+          send.response(res, err, {}, 500);
+          return;
+        }
+
+        if (roles.name === "sanitaryInspector") {
+          try {
+            const Task = await TaskService.updateTask(req.params.id, req.body);
+            send.response(res, "success", Task, 200);
+          } catch (err) {
+            send.response(res, err, [], 500);
+          }
+        } else if (roles.name === "secretary") {
+          console.log("received update task request", req.body);
+          if (req.body.after_image == null || req.body.after_image.length == 0) {
+            send.response(res, "Please send after images also", {}, 404);
+            return;
+          }
+          var imageLink = [];
+          if (typeof req.body.after_image == "object")
+          {
+            for (const iterator of req.body.after_image) {
+              imageLink.push(
+                `https://sachivalayam-backend.onrender.com/task_images/${iterator}`
+              );
+            }
+          } else if(typeof req.body.after_image == "string") {
+            imageLink.push(
+              `https://sachivalayam-backend.onrender.com/task_images/${req.body.after_image}`
+            );
+          } else {
+            send.response(res, "After Image format not supported", {}, 401);
+          }
+
+          req.body.after_image = imageLink;
+
+          try {
+            const Task = await TaskService.updateTask(req.params.id, req.body);
+            send.response(res, "success", Task, 200);
+          } catch (err) {
+            send.response(res, err, [], 500);
+          }
+        } else {
+          send.response(res, "Permission Denied, you cannot update task!", {}, 403);
+        }
+      }
+    );
+  });
 };
 
 exports.deleteTask = async (req, res) => {

@@ -43,6 +43,7 @@ exports.signup = (req, res) => {
     gender: req.body.gender,
     age: req.body.age,
     supervisor: req.body.supervisor,
+    workingSlots: req.body.workingSlots
   });
 
   if (req.body.roles) {
