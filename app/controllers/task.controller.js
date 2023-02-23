@@ -2,6 +2,7 @@ const TaskService = require("../services/taskServices");
 const send = require("../services/responseServices.js");
 const db = require("../models");
 const User = db.user;
+const Role = db.role;
 
 exports.getAllTasks = async (req, res) => {
   if (req.params.id == null) {
