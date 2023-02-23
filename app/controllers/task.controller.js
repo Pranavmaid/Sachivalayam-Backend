@@ -1,5 +1,6 @@
 const TaskService = require("../services/taskServices");
 const send = require("../services/responseServices.js");
+const User = db.user;
 
 exports.getAllTasks = async (req, res) => {
   if (req.params.id == null) {
