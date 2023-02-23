@@ -15,7 +15,111 @@ exports.createUser = async (user) => {
   return await UserModel.create(user);
 };
 exports.getUserById = async (id) => {
-  return await UserModel.findById(id);
+  var user = await UserModel.aggregate([
+    {
+      $match: {
+        _id: new ObjectId(id),
+      },
+    },
+    {
+      $lookup: {
+        from: "roles",
+        localField: "roles",
+        foreignField: "_id",
+        as: "result",
+      },
+    },
+    {
+      $unwind: {
+        path: "$result",
+      },
+    },
+    {
+      $lookup: {
+        from: "zones",
+        let: {
+          zoneCheck: "$zone",
+          wardCheck: "$ward",
+          sachivalyamCheck: "$sachivalyam",
+        },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $and: [
+                  {
+                    $eq: ["$_id", "$$zoneCheck"],
+                  },
+                ],
+              },
+            },
+          },
+          {
+            $unwind: {
+              path: "$ward",
+            },
+          },
+          {
+            $match: {
+              $expr: {
+                $and: [
+                  {
+                    $eq: ["$ward._id", "$$wardCheck"],
+                  },
+                ],
+              },
+            },
+          },
+          {
+            $unwind: {
+              path: "$ward.sachivalyam",
+            },
+          },
+          {
+            $match: {
+              $expr: {
+                $and: [
+                  {
+                    $eq: ["$ward.sachivalyam._id", "$$sachivalyamCheck"],
+                  },
+                ],
+              },
+            },
+          },
+          {
+            $project: {
+              zonename: "$name",
+              wardname: "$ward.name",
+              sachivalyamname: "$ward.sachivalyam.name",
+            },
+          },
+        ],
+        as: "zoneResult",
+      },
+    },
+    {
+      $unwind: {
+        path: "$zoneResult",
+      },
+    },
+    {
+      $project: {
+        name: "$name",
+        email: "$email",
+        phone: "$phone",
+        zone: "$zoneResult.zonename",
+        ward: "$zoneResult.wardname",
+        sachivalyam: "$zoneResult.sachivalyamname",
+        roles: "$result.name",
+        gender: "$gender",
+        age: "$age",
+        workingSlots: "$workingSlots",
+        createdAt: "$createdAt",
+        updatedAt: "$updatedAt",
+      },
+    },
+  ]);
+  return user;
 };
 
 exports.updateUser = async (id, user) => {

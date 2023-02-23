@@ -8,12 +8,21 @@ const User = mongoose.model(
       email: String,
       password: String,
       phone: String,
-      ward: String,
-      zone: String,
-      sachivalyam: String,
+      ward: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Zone",
+      },
+      zone: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Zone",
+      },
+      sachivalyam: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Zone",
+      },
       gender: String,
       age: Number,
-      supervisor : {
+      supervisor: {
         type: mongoose.Schema.Types.ObjectId, //["secretary", "admin", "worker", "sanitaryInspector"]
         ref: "User",
       },

@@ -1,5 +1,6 @@
 const UserService = require("../services/userServices");
 const send = require("../services/responseServices.js");
+const RoleModel = require("../models/role.model");
 
 exports.getAllUsers = async (req, res) => {
   try {
@@ -15,6 +16,17 @@ exports.getAllWorkers = async (req, res) => {
     const Users = await UserService.getAllWorkersOfSupervisor(req.userId);
     send.response(res, "success", Users, 200);
   } catch (err) {
+    console.log(err);
+    send.response(res, err, [], 500);
+  }
+};
+
+exports.uploadBulkExcel = async (req, res) => {
+  try {
+    const Users = await UserService.getAllWorkersOfSupervisor(req.userId);
+    send.response(res, "success", Users, 200);
+  } catch (err) {
+    console.log(err);
     send.response(res, err, [], 500);
   }
 };
@@ -30,9 +42,14 @@ exports.createUser = async (req, res) => {
 
 exports.getUserById = async (req, res) => {
   try {
-    const User = await UserService.getUserById(req.params.id);
-    send.response(res, "success", User, 200);
+    var User = await UserService.getUserById(req.params.id);
+    if (User.length == 0) {
+      send.response(res, "No user found with provided id", [], 500);
+      return;
+    }
+    send.response(res, "success", User[0], 200);
   } catch (err) {
+    console.log(err);
     send.response(res, err, [], 500);
   }
 };

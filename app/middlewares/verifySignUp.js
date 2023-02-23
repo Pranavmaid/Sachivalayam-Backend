@@ -4,22 +4,26 @@ const User = db.user;
 const send = require("../services/responseServices.js");
 
 checkDuplicateEmail = (req, res, next) => {
-  // Email
-  User.findOne({
-    email: req.body.email,
-  }).exec((err, user) => {
-    if (err) {
-      send.response(res, err, [], 500);
-      return;
-    }
+  if (req.body.roles != "worker") {
+    // Email
+    User.findOne({
+      email: req.body.email,
+    }).exec((err, user) => {
+      if (err) {
+        send.response(res, err, [], 500);
+        return;
+      }
 
-    if (user) {
-      send.response(res, "Failed! Email is already in use!", [], 400);
-      return;
-    }
+      if (user) {
+        send.response(res, "Failed! Email is already in use!", [], 400);
+        return;
+      }
 
+      next();
+    });
+  } else {
     next();
-  });
+  }
 };
 
 checkRolesExisted = (req, res, next) => {

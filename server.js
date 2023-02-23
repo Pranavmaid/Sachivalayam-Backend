@@ -271,6 +271,15 @@ function generateFolders() {
       error
     );
   }
+  try {
+    if (!fs.existsSync(`./${folderConfig.EXCEL_FOLDER}`)) {
+      fs.mkdirSync(`./${folderConfig.EXCEL_FOLDER}`);
+
+      console.log(`${folderConfig.EXCEL_FOLDER} Folder Created Successfully.`);
+    }
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 require("./app/routes/auth.routes")(app);
@@ -329,4 +338,4 @@ app.use("/task_images", express.static("TaskImages"));
 //   return data;
 // };
 
-// excelToJson(`./Excels/GVMC.xlsx`);
+// excelToJson(`./EXCEL/GVMC.xlsx`);
