@@ -19,23 +19,23 @@ exports.getAllStatusTasks = async (req, res) => {
   }
 
   try {
-    const status = ["Completed", "Ongoing" ,"In-review"]
+    const status = ["Completed", "Ongoing", "In-review"];
 
     var Tasks = [];
 
-    if(req.query.taskStatus == "all")
-    {
+    if (req.query.taskStatus == "all") {
       Tasks = await TaskService.getAllTasks(req.params.id);
     } else {
-      if(!status.includes(req.query.taskStatus))
-      {
+      if (!status.includes(req.query.taskStatus)) {
         send.response(res, "Please enter a proper status value", Tasks, 301);
       }
-      Tasks = await TaskService.getAllStatusTasks(req.params.id, req.query.taskStatus);
+      Tasks = await TaskService.getAllStatusTasks(
+        req.params.id,
+        req.query.taskStatus
+      );
     }
 
-    if(Tasks.length <= 0)
-    {
+    if (Tasks.length <= 0) {
       send.response(res, "Data Not found", Tasks, 200);
     } else {
       send.response(res, "success", Tasks, 200);
@@ -78,14 +78,13 @@ exports.createTask = async (req, res) => {
   }
 
   var imageLink = [];
-  if (typeof req.body.before_image == "object")
-  {
+  if (typeof req.body.before_image == "object") {
     for (const iterator of req.body.before_image) {
       imageLink.push(
         `https://sachivalayam-backend.onrender.com/task_images/${iterator}`
       );
     }
-  } else if(typeof req.body.before_image == "string") {
+  } else if (typeof req.body.before_image == "string") {
     imageLink.push(
       `https://sachivalayam-backend.onrender.com/task_images/${req.body.before_image}`
     );
@@ -94,12 +93,12 @@ exports.createTask = async (req, res) => {
   }
 
   req.body.before_image = imageLink;
-    try {
-      const Task = await TaskService.createTask(req.body);
-      send.response(res, "success", Task, 200);
-    } catch (err) {
-      send.response(res, err.message, {}, 500);
-    }
+  try {
+    const Task = await TaskService.createTask(req.body);
+    send.response(res, "success", Task, 200);
+  } catch (err) {
+    send.response(res, err.message, {}, 500);
+  }
 };
 
 exports.getTaskById = async (req, res) => {
@@ -117,27 +116,32 @@ exports.updateTask = async (req, res) => {
     return;
   }
   console.log("received update task request", req.body);
-  if (req.body.after_image == null || req.body.after_image.length == 0) {
-    send.response(res, "Please send after images also", {}, 404);
+  if (req.body.task_status == null) {
+    send.response(res, "Please send task status", {}, 404);
     return;
   }
-  var imageLink = [];
-  if (typeof req.body.after_image == "object")
-  {
-    for (const iterator of req.body.after_image) {
-      imageLink.push(
-        `https://sachivalayam-backend.onrender.com/task_images/${iterator}`
-      );
+  if (req.body.task_status == "In-review") {
+    if (req.body.after_image == null || req.body.after_image.length == 0) {
+      send.response(res, "Please send after images also", {}, 404);
+      return;
     }
-  } else if(typeof req.body.after_image == "string") {
-    imageLink.push(
-      `https://sachivalayam-backend.onrender.com/task_images/${req.body.after_image}`
-    );
-  } else {
-    send.response(res, "After Image format not supported", {}, 401);
-  }
+    var imageLink = [];
+    if (typeof req.body.after_image == "object") {
+      for (const iterator of req.body.after_image) {
+        imageLink.push(
+          `https://sachivalayam-backend.onrender.com/task_images/${iterator}`
+        );
+      }
+    } else if (typeof req.body.after_image == "string") {
+      imageLink.push(
+        `https://sachivalayam-backend.onrender.com/task_images/${req.body.after_image}`
+      );
+    } else {
+      send.response(res, "After Image format not supported", {}, 401);
+    }
 
-  req.body.after_image = imageLink;
+    req.body.after_image = imageLink;
+  }
   try {
     const Task = await TaskService.updateTask(req.params.id, req.body);
     send.response(res, "success", Task, 200);

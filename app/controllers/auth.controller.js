@@ -13,8 +13,6 @@ const { ObjectId } = require("mongodb");
 exports.signup = (req, res) => {
   if (
     req.body.name == null ||
-    req.body.email == null ||
-    req.body.password == null ||
     req.body.phone == null ||
     req.body.ward == null ||
     req.body.zone == null ||
@@ -26,10 +24,18 @@ exports.signup = (req, res) => {
     send.response(res, "Please enter all data for signup process", {}, 403);
     return;
   }
+  if (req.body.roles != "worker") {
+    if (req.body.email == null || req.body.password == null) {
+      send.response(res, "Please send email", {}, 403);
+      return;
+    }
+  }
+
   const user = new User({
     name: req.body.name,
     email: req.body.email,
-    password: bcrypt.hashSync(req.body.password, 8),
+    password: req.body.password, //bcrypt.hashSync(req.body.password, 8),
+    workingSlots: req.body.workingSlots,
     phone: req.body.phone,
     ward: req.body.ward,
     zone: req.body.zone,
@@ -119,6 +125,9 @@ exports.signup = (req, res) => {
 
                     user.ward = ward[0].wardid;
                     user.sachivalyam = ward[0].sachivalyamid;
+                    if (req.body.password != null) {
+                      user.password = bcrypt.hashSync(req.body.password, 8);
+                    }
 
                     user.save((err, updatedUser) => {
                       if (err) {
@@ -165,7 +174,8 @@ exports.signup = (req, res) => {
         return;
       }
 
-      user.roles = [role._id];
+      user.roles = role._id;
+
       user.save((err, worker) => {
         if (err) {
           send.response(res, err, [], 500);
@@ -179,6 +189,14 @@ exports.signup = (req, res) => {
 };
 
 exports.signin = (req, res) => {
+  if (req.body.password == undefined || req.body.password == null) {
+    send.response(res, "Password Not found.", [], 404);
+    return;
+  }
+  if (req.body.username == undefined || req.body.username == null) {
+    send.response(res, "Username Not found.", [], 404);
+    return;
+  }
   User.findOne({
     email: req.body.username,
   })
@@ -190,6 +208,11 @@ exports.signin = (req, res) => {
       }
 
       if (!user) {
+        send.response(res, "User Not found.", [], 404);
+        return;
+      }
+
+      if (user.password == undefined || user.password == null) {
         send.response(res, "User Not found.", [], 404);
         return;
       }
