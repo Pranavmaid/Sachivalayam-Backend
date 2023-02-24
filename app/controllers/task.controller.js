@@ -103,7 +103,7 @@ exports.createTask = async (req, res) => {
   let zone = await Zone.aggregate([
     {
       $match: {
-        _id: ObjectId(req.user.zone),
+        _id: req.user.zone,
       },
     },
     {
@@ -113,7 +113,7 @@ exports.createTask = async (req, res) => {
     },
     {
       $match: {
-        "ward._id": ObjectId(req.user.ward),
+        "ward._id": req.user.ward,
       },
     },
     {
@@ -123,7 +123,7 @@ exports.createTask = async (req, res) => {
     },
     {
       $match: {
-        "ward.sachivalyam._id": ObjectId(req.user.sachivalyam),
+        "ward.sachivalyam._id": req.user.sachivalyam,
       },
     },
     {
