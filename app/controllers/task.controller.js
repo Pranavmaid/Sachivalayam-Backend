@@ -144,21 +144,23 @@ exports.getTodaysTasks = async (req, res) => {
     send.response(res, "User Id Not Found", {}, 404);
   }
   try {
-    let zone = await extractWardZoneSachivalayamName(req, res);
+    extractWardZoneSachivalayamName(req, res).then(async (zone) => {
+      
+      console.log("zone is ", zone);
 
-    console.log("zone is ", zone);
-    if(zone.length <=0)
-    {
-      send.response(res, "Zone Not found", [], 404);
-      return;
-    }
+      if(zone.length <=0)
+      {
+        send.response(res, "Zone Not found", [], 404);
+        return;
+      }
 
-    req.user.wardname = zone[0].wardname;
-    req.user.zonename = zone[0].zonename;
-    req.user.sachivalyamname = zone[0].sachivalyamname;
+      req.user.wardname = zone[0].wardname;
+      req.user.zonename = zone[0].zonename;
+      req.user.sachivalyamname = zone[0].sachivalyamname;
 
-    const Tasks = await TaskService.getTodaysTasks(req.params.id, req.role, req.user);
-    send.response(res, "success", Tasks, 200);
+      const Tasks = await TaskService.getTodaysTasks(req.params.id, req.role, req.user);
+      send.response(res, "success", Tasks, 200);
+    });
   } catch (err) {
     send.response(res, err, {}, 500);
   }
