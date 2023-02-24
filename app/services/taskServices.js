@@ -12,9 +12,9 @@ exports.getAllTasks = async (id, role, user) => {
   else if (role == "sanitaryInspector")
   {
     console.log("user is ", user)
-    console.log("ward is ", user.ward)
+    console.log("ward is ", user.wardname)
     return await TaskModel.find({
-      ward: user.ward,
+      ward: user.wardname,
     }).sort({ createdAt: -1 });
   } 
   else 
@@ -34,9 +34,9 @@ exports.getAllStatusTasks = async (id, role, user, query) => {
   else if (role == "sanitaryInspector")
   {
     console.log("user is ", user)
-    console.log("ward is ", user.ward)
+    console.log("ward is ", user.wardname)
     return await TaskModel.find({
-      ward: user.ward,
+      ward: user.wardname,
       task_status: query
     }).sort({ createdAt: -1 });
   } 
@@ -97,12 +97,12 @@ exports.getTodaysTasks = async (id, role, user) => {
     };
   } else if (role == "sanitaryInspector") {
     console.log("user is ", user)
-    console.log("ward is ", user.ward)
-    
+    console.log("ward is ", user.wardname)
+
     let statusCount = await TaskModel.aggregate([
       {
         $match: {
-          ward: user.ward,
+          ward: user.wardname,
           createdAt: {
             $gte: new Date(s),
           },

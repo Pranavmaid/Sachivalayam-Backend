@@ -100,9 +100,9 @@ exports.getAllStatusTasks = async (req, res) => {
       },
     ]);
 
-    req.user.ward = zone[0].wardname;
-    req.user.zone = zone[0].zonename;
-    req.user.sachivalyam = zone[0].sachivalyam;
+    req.user.wardname = zone[0].wardname;
+    req.user.zonename = zone[0].zonename;
+    req.user.sachivalyamname = zone[0].sachivalyamname;
 
     if (req.query.taskStatus == "all") {
       Tasks = await TaskService.getAllTasks(req.params.id, req.role, req.user);
@@ -168,10 +168,10 @@ exports.getTodaysTasks = async (req, res) => {
       },
     ]);
 
-    req.user.ward = zone[0].wardname;
-    req.user.zone = zone[0].zonename;
-    req.user.sachivalyam = zone[0].sachivalyam;
-    
+    req.user.wardname = zone[0].wardname;
+    req.user.zonename = zone[0].zonename;
+    req.user.sachivalyamname = zone[0].sachivalyamname;
+
     const Tasks = await TaskService.getTodaysTasks(req.params.id, req.role, req.user);
     send.response(res, "success", Tasks, 200);
   } catch (err) {
