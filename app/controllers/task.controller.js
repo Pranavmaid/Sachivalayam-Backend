@@ -1,6 +1,7 @@
 const TaskService = require("../services/taskServices");
 const send = require("../services/responseServices.js");
 const config = require("../config/auth.config.js");
+const folderConfig = require("../config/folder.config.js");
 const { zoneExtract } = require("../middlewares");
 const db = require("../models");
 const Zone = db.zone;
@@ -123,12 +124,12 @@ exports.createTask = async (req, res) => {
   if (typeof req.body.before_image == "object") {
     for (const iterator of req.body.before_image) {
       imageLink.push(
-        `${config.baseURL}/${iterator}`
+        `${config.baseURL}/${folderConfig.TASK_IMAGE_KEY}/${iterator}`
       );
     }
   } else if (typeof req.body.before_image == "string") {
     imageLink.push(
-      `${config.baseURL}/${req.body.before_image}`
+      `${config.baseURL}/${folderConfig.TASK_IMAGE_KEY}/${req.body.before_image}`
     );
   } else {
     send.response(res, "Before Image format not supported", {}, 401);
@@ -188,12 +189,12 @@ exports.updateTask = async (req, res) => {
     {
       for (const iterator of req.body.after_image) {
         imageLink.push(
-          `${config.baseURL}/${iterator}`
+          `${config.baseURL}/${folderConfig.TASK_IMAGE_KEY}/${iterator}`
         );
       }
     } else if(typeof req.body.after_image == "string") {
       imageLink.push(
-        `${config.baseURL}/${req.body.after_image}`
+        `${config.baseURL}/${folderConfig.TASK_IMAGE_KEY}/${req.body.after_image}`
       );
     } else {
       send.response(res, "After Image format not supported", {}, 401);
