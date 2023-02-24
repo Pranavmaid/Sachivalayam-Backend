@@ -3,6 +3,7 @@ const Zone = db.user;
 const send = require("../services/responseServices.js");
 
 extractWardZoneSachivalayamName = async (req, res) => {
+    console.log("User is ", req.user);
     return await Zone.aggregate([{
         $match: {
         _id: req.user.zone,
