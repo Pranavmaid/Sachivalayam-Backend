@@ -1,6 +1,7 @@
 const TaskService = require("../services/taskServices");
 const send = require("../services/responseServices.js");
 const config = require("../config/auth.config.js");
+const { zoneExtract } = require("../middlewares");
 const db = require("../models");
 const Zone = db.zone;
 
@@ -144,23 +145,22 @@ exports.getTodaysTasks = async (req, res) => {
     send.response(res, "User Id Not Found", {}, 404);
   }
   try {
-    extractWardZoneSachivalayamName(req, res).then(async (zone) => {
-      
-      console.log("zone is ", zone);
 
-      if(zone.length <=0)
-      {
-        send.response(res, "Zone Not found", [], 404);
-        return;
-      }
+    let zone = await zoneExtract.extractWardZoneSachivalayamName(req, res);
+    console.log("zone is ", zone);
 
-      req.user.wardname = zone[0].wardname;
-      req.user.zonename = zone[0].zonename;
-      req.user.sachivalyamname = zone[0].sachivalyamname;
+    if(zone.length <=0)
+    {
+      send.response(res, "Zone Not found", [], 404);
+      return;
+    }
 
-      const Tasks = await TaskService.getTodaysTasks(req.params.id, req.role, req.user);
-      send.response(res, "success", Tasks, 200);
-    });
+    req.user.wardname = zone[0].wardname;
+    req.user.zonename = zone[0].zonename;
+    req.user.sachivalyamname = zone[0].sachivalyamname;
+
+    const Tasks = await TaskService.getTodaysTasks(req.params.id, req.role, req.user);
+    send.response(res, "success", Tasks, 200);
   } catch (err) {
     send.response(res, err, {}, 500);
   }

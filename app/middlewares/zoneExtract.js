@@ -39,3 +39,9 @@ extractWardZoneSachivalayamName = async(req, res) => {
     },
     ]);
   };
+
+  const zoneExtract = {
+    extractWardZoneSachivalayamName,
+  };
+  
+  module.exports = zoneExtract;
