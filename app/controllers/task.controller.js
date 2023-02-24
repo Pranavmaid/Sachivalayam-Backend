@@ -10,40 +10,7 @@ exports.getAllTasks = async (req, res) => {
     send.response(res, "User Id Not Found", {}, 404);
   }
   try {
-    let zone = await Zone.aggregate([{
-        $match: {
-        _id: req.user.zone,
-        },
-    },
-    {
-        $unwind: {
-        path: "$ward",
-        },
-    },
-    {
-        $match: {
-        "ward._id": req.user.ward,
-        },
-    },
-    {
-        $unwind: {
-        path: "$ward.sachivalyam",
-        },
-    },
-    {
-        $match: {
-        "ward.sachivalyam._id": req.user.sachivalyam,
-        },
-    },
-    {
-        $project: {
-        zonename: "$name",
-        wardname: "$ward.name",
-        sachivalyamname: "$ward.sachivalyam.name",
-        },
-    },
-    ]);
-    console.log("zone is ", zone);
+    let zone = await zoneExtract.extractWardZoneSachivalayamName(req, res);
     if(zone.length <=0)
     {
       send.response(res, "Zone Not found", [], 404);
@@ -71,41 +38,8 @@ exports.getAllStatusTasks = async (req, res) => {
 
     var Tasks = [];
 
-    let zone = await Zone.aggregate([{
-      $match: {
-      _id: req.user.zone,
-      },
-  },
-  {
-      $unwind: {
-      path: "$ward",
-      },
-  },
-  {
-      $match: {
-      "ward._id": req.user.ward,
-      },
-  },
-  {
-      $unwind: {
-      path: "$ward.sachivalyam",
-      },
-  },
-  {
-      $match: {
-      "ward.sachivalyam._id": req.user.sachivalyam,
-      },
-  },
-  {
-      $project: {
-      zonename: "$name",
-      wardname: "$ward.name",
-      sachivalyamname: "$ward.sachivalyam.name",
-      },
-  },
-  ]);
+    let zone = await zoneExtract.extractWardZoneSachivalayamName(req, res);
 
-    console.log("zone is ", zone);
     if(zone.length <=0)
     {
       send.response(res, "Zone Not found", [], 404);
@@ -147,9 +81,8 @@ exports.getTodaysTasks = async (req, res) => {
   try {
 
     let zone = await zoneExtract.extractWardZoneSachivalayamName(req, res);
-    console.log("zone is ", zone);
 
-    if(zone.length <=0)
+    if(zone == undefined || zone.length <= 0)
     {
       send.response(res, "Zone Not found", [], 404);
       return;
@@ -203,41 +136,8 @@ exports.createTask = async (req, res) => {
 
   req.body.before_image = imageLink;
 
-  let zone = await Zone.aggregate([{
-    $match: {
-    _id: req.user.zone,
-    },
-},
-{
-    $unwind: {
-    path: "$ward",
-    },
-},
-{
-    $match: {
-    "ward._id": req.user.ward,
-    },
-},
-{
-    $unwind: {
-    path: "$ward.sachivalyam",
-    },
-},
-{
-    $match: {
-    "ward.sachivalyam._id": req.user.sachivalyam,
-    },
-},
-{
-    $project: {
-    zonename: "$name",
-    wardname: "$ward.name",
-    sachivalyamname: "$ward.sachivalyam.name",
-    },
-},
-]);
+  let zone = await zoneExtract.extractWardZoneSachivalayamName(req, res);
 
-  console.log("zone is ", zone);
   if(zone.length <=0)
   {
     send.response(res, "Zone Not found", [], 404);

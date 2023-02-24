@@ -1,10 +1,7 @@
 const db = require("../models");
-const Zone = db.user;
-const send = require("../services/responseServices.js");
+const Zone = db.zone;
 
 extractWardZoneSachivalayamName = async(req, res) => {
-    console.log("User is ", req.user);
-
     return await Zone.aggregate([{
         $match: {
         _id: req.user.zone,
@@ -40,8 +37,8 @@ extractWardZoneSachivalayamName = async(req, res) => {
     ]);
   };
 
-  const zoneExtract = {
+const zoneExtract = {
     extractWardZoneSachivalayamName,
-  };
-  
-  module.exports = zoneExtract;
+};
+
+module.exports = zoneExtract;
