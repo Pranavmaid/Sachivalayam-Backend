@@ -71,7 +71,7 @@ module.exports = function (app) {
 
   app.put(
     "/api/task/:id",
-    [authJwt.verifyToken],
+    [authJwt.verifyToken, authJwt.checkRole],
     imageUpload.array(
       `${folderConfig.TASK_IMAGE_KEY}`,
       folderConfig.TASK_MAX_IMAGES
