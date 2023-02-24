@@ -1,5 +1,6 @@
 const TaskService = require("../services/taskServices");
 const send = require("../services/responseServices.js");
+const config = require("../config/auth.config.js");
 const db = require("../models");
 const Zone = db.zone;
 
@@ -118,12 +119,12 @@ exports.createTask = async (req, res) => {
   if (typeof req.body.before_image == "object") {
     for (const iterator of req.body.before_image) {
       imageLink.push(
-        `https://sachivalayam-backend.onrender.com/task_images/${iterator}`
+        `${config.baseURL}/${iterator}`
       );
     }
   } else if (typeof req.body.before_image == "string") {
     imageLink.push(
-      `https://sachivalayam-backend.onrender.com/task_images/${req.body.before_image}`
+      `${config.baseURL}/${req.body.before_image}`
     );
   } else {
     send.response(res, "Before Image format not supported", {}, 401);
@@ -182,12 +183,12 @@ exports.updateTask = async (req, res) => {
     {
       for (const iterator of req.body.after_image) {
         imageLink.push(
-          `https://sachivalayam-backend.onrender.com/task_images/${iterator}`
+          `${config.baseURL}/${iterator}`
         );
       }
     } else if(typeof req.body.after_image == "string") {
       imageLink.push(
-        `https://sachivalayam-backend.onrender.com/task_images/${req.body.after_image}`
+        `${config.baseURL}/${req.body.after_image}`
       );
     } else {
       send.response(res, "After Image format not supported", {}, 401);
