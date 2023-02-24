@@ -10,10 +10,11 @@ exports.getAllTasks = async (req, res) => {
   }
   try {
     let zone = await extractWardZoneSachivalayamName(req, res);
-
+    console.log("zone is ", zone);
     if(zone.length <=0)
     {
       send.response(res, "Zone Not found", [], 404);
+      return;
     }
 
     req.user.ward = zone[0].wardname;
@@ -39,9 +40,11 @@ exports.getAllStatusTasks = async (req, res) => {
 
     let zone = await extractWardZoneSachivalayamName(req, res);
 
+    console.log("zone is ", zone);
     if(zone.length <=0)
     {
       send.response(res, "Zone Not found", [], 404);
+      return;
     }
 
     req.user.wardname = zone[0].wardname;
@@ -79,9 +82,11 @@ exports.getTodaysTasks = async (req, res) => {
   try {
     let zone = await extractWardZoneSachivalayamName(req, res);
 
+    console.log("zone is ", zone);
     if(zone.length <=0)
     {
       send.response(res, "Zone Not found", [], 404);
+      return;
     }
 
     req.user.wardname = zone[0].wardname;
@@ -134,9 +139,11 @@ exports.createTask = async (req, res) => {
 
   let zone = await extractWardZoneSachivalayamName(req, res);
 
+  console.log("zone is ", zone);
   if(zone.length <=0)
   {
     send.response(res, "Zone Not found", [], 404);
+    return;
   }
 
   req.body.ward = zone[0].wardname;
