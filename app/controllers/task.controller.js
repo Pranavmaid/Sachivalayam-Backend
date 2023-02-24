@@ -10,6 +10,45 @@ exports.getAllTasks = async (req, res) => {
     send.response(res, "User Id Not Found", {}, 404);
   }
   try {
+    let zone = await Zone.aggregate([
+      {
+        $match: {
+          _id: req.user.zone,
+        },
+      },
+      {
+        $unwind: {
+          path: "$ward",
+        },
+      },
+      {
+        $match: {
+          "ward._id": req.user.ward,
+        },
+      },
+      {
+        $unwind: {
+          path: "$ward.sachivalyam",
+        },
+      },
+      {
+        $match: {
+          "ward.sachivalyam._id": req.user.sachivalyam,
+        },
+      },
+      {
+        $project: {
+          zonename: "$name",
+          wardname: "$ward.name",
+          sachivalyamname: "$ward.sachivalyam.name",
+        },
+      },
+    ]);
+
+    req.user.ward = zone[0].wardname;
+    req.user.zone = zone[0].zonename;
+    req.user.sachivalyam = zone[0].sachivalyam;
+
     const Tasks = await TaskService.getAllTasks(req.params.id, req.role, req.user);
     send.response(res, "success", Tasks, 200);
   } catch (err) {
@@ -26,6 +65,44 @@ exports.getAllStatusTasks = async (req, res) => {
     const status = ["Completed", "Ongoing", "In-review"];
 
     var Tasks = [];
+    let zone = await Zone.aggregate([
+      {
+        $match: {
+          _id: req.user.zone,
+        },
+      },
+      {
+        $unwind: {
+          path: "$ward",
+        },
+      },
+      {
+        $match: {
+          "ward._id": req.user.ward,
+        },
+      },
+      {
+        $unwind: {
+          path: "$ward.sachivalyam",
+        },
+      },
+      {
+        $match: {
+          "ward.sachivalyam._id": req.user.sachivalyam,
+        },
+      },
+      {
+        $project: {
+          zonename: "$name",
+          wardname: "$ward.name",
+          sachivalyamname: "$ward.sachivalyam.name",
+        },
+      },
+    ]);
+
+    req.user.ward = zone[0].wardname;
+    req.user.zone = zone[0].zonename;
+    req.user.sachivalyam = zone[0].sachivalyam;
 
     if (req.query.taskStatus == "all") {
       Tasks = await TaskService.getAllTasks(req.params.id, req.role, req.user);
@@ -56,6 +133,45 @@ exports.getTodaysTasks = async (req, res) => {
     send.response(res, "User Id Not Found", {}, 404);
   }
   try {
+    let zone = await Zone.aggregate([
+      {
+        $match: {
+          _id: req.user.zone,
+        },
+      },
+      {
+        $unwind: {
+          path: "$ward",
+        },
+      },
+      {
+        $match: {
+          "ward._id": req.user.ward,
+        },
+      },
+      {
+        $unwind: {
+          path: "$ward.sachivalyam",
+        },
+      },
+      {
+        $match: {
+          "ward.sachivalyam._id": req.user.sachivalyam,
+        },
+      },
+      {
+        $project: {
+          zonename: "$name",
+          wardname: "$ward.name",
+          sachivalyamname: "$ward.sachivalyam.name",
+        },
+      },
+    ]);
+
+    req.user.ward = zone[0].wardname;
+    req.user.zone = zone[0].zonename;
+    req.user.sachivalyam = zone[0].sachivalyam;
+    
     const Tasks = await TaskService.getTodaysTasks(req.params.id, req.role, req.user);
     send.response(res, "success", Tasks, 200);
   } catch (err) {
