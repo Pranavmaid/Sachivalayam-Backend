@@ -34,7 +34,7 @@ module.exports = function (app) {
 
   app.get("/api/user", [authJwt.verifyToken], controller.getAllUsers);
 
-  app.get("/api/user/worker", [authJwt.verifyToken], controller.getAllWorkers);
+  app.get("/api/user/worker", [authJwt.verifyToken, authJwt.checkRole], controller.getAllWorkers);
 
   app.post(
     "/api/user/worker",

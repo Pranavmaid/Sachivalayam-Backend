@@ -42,16 +42,16 @@ module.exports = function (app) {
     next();
   });
 
-  app.get("/api/task/:id", [authJwt.verifyToken], getAllTasks);
+  app.get("/api/task/:id", [authJwt.verifyToken, authJwt.checkRole], getAllTasks);
 
   app.get(
     "/api/task_by_status/:id",
-    [authJwt.verifyToken],
+    [authJwt.verifyToken, authJwt.checkRole],
     getAllStatusTasks
   );
 
   //get todays task and task status count
-  app.get("/api/todays_task/:id", [authJwt.verifyToken], getTodaysTasks);
+  app.get("/api/todays_task/:id", [authJwt.verifyToken, authJwt.checkRole], getTodaysTasks);
 
   //get todays task and task status count
   app.get("/api/task_names", [authJwt.verifyToken], getTaskName);
@@ -61,7 +61,7 @@ module.exports = function (app) {
     to same for backend and frontend*/
   app.post(
     "/api/task",
-    [authJwt.verifyToken],
+    [authJwt.verifyToken, authJwt.checkRole],
     imageUpload.array(
       `${folderConfig.TASK_IMAGE_KEY}`,
       folderConfig.TASK_MAX_IMAGES

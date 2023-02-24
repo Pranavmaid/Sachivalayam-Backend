@@ -3,13 +3,14 @@ const send = require("../services/responseServices.js");
 const db = require("../models");
 const User = db.user;
 const Role = db.role;
+const Zone = db.zone;
 
 exports.getAllTasks = async (req, res) => {
   if (req.params.id == null) {
     send.response(res, "User Id Not Found", {}, 404);
   }
   try {
-    const Tasks = await TaskService.getAllTasks(req.params.id);
+    const Tasks = await TaskService.getAllTasks(req.params.id, req.role, req.user);
     send.response(res, "success", Tasks, 200);
   } catch (err) {
     send.response(res, err, [], 500);
@@ -27,13 +28,15 @@ exports.getAllStatusTasks = async (req, res) => {
     var Tasks = [];
 
     if (req.query.taskStatus == "all") {
-      Tasks = await TaskService.getAllTasks(req.params.id);
+      Tasks = await TaskService.getAllTasks(req.params.id, req.role, req.user);
     } else {
       if (!status.includes(req.query.taskStatus)) {
         send.response(res, "Please enter a proper status value", Tasks, 301);
       }
       Tasks = await TaskService.getAllStatusTasks(
         req.params.id,
+        req.role, 
+        req.user,
         req.query.taskStatus
       );
     }
@@ -53,7 +56,7 @@ exports.getTodaysTasks = async (req, res) => {
     send.response(res, "User Id Not Found", {}, 404);
   }
   try {
-    const Tasks = await TaskService.getTodaysTasks(req.params.id);
+    const Tasks = await TaskService.getTodaysTasks(req.params.id, req.role, req.user);
     send.response(res, "success", Tasks, 200);
   } catch (err) {
     send.response(res, err, {}, 500);
@@ -96,6 +99,46 @@ exports.createTask = async (req, res) => {
   }
 
   req.body.before_image = imageLink;
+
+  let zone = await Zone.aggregate([
+    {
+      $match: {
+        _id: ObjectId(req.user.zone),
+      },
+    },
+    {
+      $unwind: {
+        path: "$ward",
+      },
+    },
+    {
+      $match: {
+        "ward._id": ObjectId(req.user.ward),
+      },
+    },
+    {
+      $unwind: {
+        path: "$ward.sachivalyam",
+      },
+    },
+    {
+      $match: {
+        "ward.sachivalyam._id": ObjectId(req.user.sachivalyam),
+      },
+    },
+    {
+      $project: {
+        zonename: "$name",
+        wardname: "$ward.name",
+        sachivalyamname: "$ward.sachivalyam.name",
+      },
+    },
+  ]);
+
+  req.body.ward = zone[0].wardname;
+  req.body.zone = zone[0].zonename;
+  req.body.sachivalyam = zone[0].sachivalyamname;
+
   try {
     const Task = await TaskService.createTask(req.body);
     send.response(res, "success", Task, 200);

@@ -32,6 +32,9 @@ const Task = mongoose.model(
         ref: "User",
         required: [true, "Please send assigner id"],
       },
+      ward: String,
+      zone: String,
+      sachivalyam: String,
     },
     { timestamps: true }
   )

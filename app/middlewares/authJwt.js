@@ -23,6 +23,30 @@ verifyToken = (req, res, next) => {
   });
 };
 
+checkRole = (req, res, next) => {
+  User.findById(req.userId).exec((err, user) => {
+    if (err) {
+      send.response(res, err, {}, 500);
+      return;
+    }
+    req.user = user; 
+    Role.findOne(
+      {
+        _id: user.roles,
+      },
+      (err, roles) => {
+        if (err) {
+          send.response(res, err, {}, 500);
+          return;
+        }
+
+        req.role = roles.name;
+        next();
+      }
+    );
+  });
+}
+
 isAdmin = (req, res, next) => {
   User.findById(req.userId).exec((err, user) => {
     if (err) {
@@ -111,6 +135,7 @@ isSanitaryInspector = (req, res, next) => {
 
 const authJwt = {
   verifyToken,
+  checkRole,
   isAdmin,
   isSecretary,
   isSanitaryInspector,

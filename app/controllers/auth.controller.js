@@ -280,7 +280,7 @@ exports.signin = (req, res) => {
           email: user.email,
           phone: user.phone,
           ward: zone[0].wardname,
-          zone: zone[0].wardname,
+          zone: zone[0].zonename,
           sachivalyam: zone[0].sachivalyamname,
           gender: user.gender,
           age: user.age,
