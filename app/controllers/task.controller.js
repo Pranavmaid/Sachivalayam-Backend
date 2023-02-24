@@ -144,39 +144,7 @@ exports.getTodaysTasks = async (req, res) => {
     send.response(res, "User Id Not Found", {}, 404);
   }
   try {
-    let zone = await Zone.aggregate([{
-      $match: {
-      _id: req.user.zone,
-      },
-  },
-  {
-      $unwind: {
-      path: "$ward",
-      },
-  },
-  {
-      $match: {
-      "ward._id": req.user.ward,
-      },
-  },
-  {
-      $unwind: {
-      path: "$ward.sachivalyam",
-      },
-  },
-  {
-      $match: {
-      "ward.sachivalyam._id": req.user.sachivalyam,
-      },
-  },
-  {
-      $project: {
-      zonename: "$name",
-      wardname: "$ward.name",
-      sachivalyamname: "$ward.sachivalyam.name",
-      },
-  },
-  ]);
+    let zone = await extractWardZoneSachivalayamName(req, res);
 
     console.log("zone is ", zone);
     if(zone.length <=0)
