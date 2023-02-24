@@ -16,7 +16,6 @@ exports.signup = (req, res) => {
     req.body.phone == null ||
     req.body.ward == null ||
     req.body.zone == null ||
-    req.body.sachivalyam == null ||
     req.body.gender == null ||
     req.body.age == null ||
     req.body.roles == null
@@ -27,6 +26,11 @@ exports.signup = (req, res) => {
   if (req.body.roles != "worker") {
     if (req.body.email == null || req.body.password == null) {
       send.response(res, "Please send email", {}, 403);
+      return;
+    }
+  } else if (req.body.roles != "sanitaryInspector") {
+    if (req.body.sachivalyam == null) {
+      send.response(res, "Please send sachivalyam", {}, 403);
       return;
     }
   }
