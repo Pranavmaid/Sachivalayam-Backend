@@ -29,6 +29,7 @@ checkRole = (req, res, next) => {
       send.response(res, err, {}, 500);
       return;
     }
+    console.log("user is ", user);
     req.user = user; 
     Role.findOne(
       {
