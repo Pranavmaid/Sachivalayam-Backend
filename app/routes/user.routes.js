@@ -34,16 +34,20 @@ module.exports = function (app) {
 
   app.get("/api/user", [authJwt.verifyToken], controller.getAllUsers);
 
-  app.get("/api/user/worker", [authJwt.verifyToken, authJwt.checkRole], controller.getAllWorkers);
+  app.get(
+    "/api/user/worker",
+    [authJwt.verifyToken, authJwt.checkRole],
+    controller.getAllWorkers
+  );
 
   app.post(
     "/api/user/worker",
-    [authJwt.verifyToken],
+    [authJwt.verifyToken, authJwt.checkRole],
     excelUpload.array(
       `${folderConfig.WORKER_EXCEL_KEY}`,
       folderConfig.WORKER_MAX_EXCEL
     ),
-    controller.getAllWorkers
+    controller.uploadBulkExcel
   );
 
   app.get("/api/user/:id", [authJwt.verifyToken], controller.getUserById);

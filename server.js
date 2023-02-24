@@ -3,7 +3,6 @@ const cors = require("cors");
 const dbConfig = require("./app/config/db.config");
 const folderConfig = require("./app/config/folder.config");
 const fs = require("fs");
-const XLSX = require("xlsx");
 
 const app = express();
 
@@ -280,6 +279,17 @@ function generateFolders() {
   } catch (error) {
     console.log(error);
   }
+  try {
+    if (!fs.existsSync(`./${folderConfig.DOWNLOAD_FOLDER}`)) {
+      fs.mkdirSync(`./${folderConfig.DOWNLOAD_FOLDER}`);
+
+      console.log(
+        `${folderConfig.DOWNLOAD_FOLDER} Folder Created Successfully.`
+      );
+    }
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 require("./app/routes/auth.routes")(app);
@@ -298,44 +308,4 @@ app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}.`);
 });
 app.use("/task_images", express.static("TaskImages"));
-
-// const excelToJson = async (filePath) => {
-//   const wb = XLSX.readFile(filePath);
-//   const ws = wb.Sheets["Sheet1"];
-//   const data = XLSX.utils.sheet_to_json(ws);
-//   var filteredData = [];
-//   var zone = null;
-//   var wardNo = null;
-//   var sachivalyamName = null;
-//   var ward = [];
-//   var sachivalyam = [];
-//   var area = [];
-//   for (const iterator of data) {
-//     if (iterator.Zone != undefined) {
-//       if (iterator.Zone != zone) {
-//         // filteredData.push({
-//         //   name:zone,
-//         //   ward: ward,
-//         // })
-//         zone = iterator.Zone;
-//         ward.push(iterator.WardNo);
-//         sachivalyam.push(iterator.Sachiwalayam);
-//         area.push(iterator.Area);
-//       } else {
-//         if (iterator.WardNo != wardNo) {
-//         } else {
-//           sachivalyamName = iterator.Sachiwalayam;
-//           area.push(iterator.Area);
-//         }
-//       }
-//     } else {
-//       area.push(iterator.Area);
-//     }
-//   }
-//   console.log(data);
-//   // console.log(data[0].LineNo);
-
-//   return data;
-// };
-
-// excelToJson(`./EXCEL/GVMC.xlsx`);
+app.use("/download", express.static("DOWNLOADS"));

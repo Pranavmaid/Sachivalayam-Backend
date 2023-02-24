@@ -22,8 +22,21 @@ exports.getAllWorkers = async (req, res) => {
 };
 
 exports.uploadBulkExcel = async (req, res) => {
+  if (req.body.filename == null || req.body.filename == undefined) {
+    send.response(res, "File name not found", [], 404);
+    return;
+  }
   try {
-    const Users = await UserService.getAllWorkersOfSupervisor(req.userId);
+    let data = await UserService.excelToJson(`./EXCEL/${req.body.filename}`);
+    if (data != undefined && data.length > 0) {
+      for (let i = 0; i < data.length; i++) {
+        data[i]["ward"] = req.user.ward;
+        data[i]["zone"] = req.user.zone;
+        data[i]["sachivalyam"] = req.user.sachivalyam;
+        data[i]["workingSlots"] = data[i]["workingSlots"].split(",");
+      }
+    }
+    const Users = await UserService.insertManyUser(data);
     send.response(res, "success", Users, 200);
   } catch (err) {
     console.log(err);
