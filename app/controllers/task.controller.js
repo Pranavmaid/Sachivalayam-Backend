@@ -9,7 +9,7 @@ exports.getAllTasks = async (req, res) => {
     send.response(res, "User Id Not Found", {}, 404);
   }
   try {
-    let zone = extractWardZoneSachivalayamName(req, res);
+    let zone = await extractWardZoneSachivalayamName(req, res);
 
     if(zone.length <=0)
     {
@@ -37,7 +37,7 @@ exports.getAllStatusTasks = async (req, res) => {
 
     var Tasks = [];
 
-    let zone = extractWardZoneSachivalayamName(req, res);
+    let zone = await extractWardZoneSachivalayamName(req, res);
 
     if(zone.length <=0)
     {
@@ -77,7 +77,7 @@ exports.getTodaysTasks = async (req, res) => {
     send.response(res, "User Id Not Found", {}, 404);
   }
   try {
-    let zone = extractWardZoneSachivalayamName(req, res);
+    let zone = await extractWardZoneSachivalayamName(req, res);
 
     if(zone.length <=0)
     {
@@ -132,7 +132,7 @@ exports.createTask = async (req, res) => {
 
   req.body.before_image = imageLink;
 
-  let zone = extractWardZoneSachivalayamName(req, res);
+  let zone = await extractWardZoneSachivalayamName(req, res);
 
   if(zone.length <=0)
   {
