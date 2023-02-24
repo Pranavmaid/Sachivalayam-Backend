@@ -126,6 +126,7 @@ exports.getTodaysTasks = async (id, role, user) => {
     }
     let TaskList = await TaskModel.find({
       ward: user.wardname,
+      task_status: "In-review",
       createdAt: { $gte: new Date(s) },
     }).sort({ createdAt: -1 });
     return {
