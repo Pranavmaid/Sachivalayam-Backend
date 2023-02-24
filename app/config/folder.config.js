@@ -3,6 +3,7 @@ module.exports = {
   TASK_IMAGE_KEY: "task_images",
   TASK_MAX_IMAGES: 30,
   EXCEL_FOLDER: "EXCEL",
+  DOWNLOAD_FOLDER: "DOWNLOADS",
   WORKER_EXCEL_KEY: "worker_excel",
   WORKER_MAX_EXCEL: 1,
 };

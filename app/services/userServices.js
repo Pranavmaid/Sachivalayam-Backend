@@ -1,6 +1,7 @@
 const UserModel = require("../models/user.model");
 const RoleModel = require("../models/role.model");
 const { ObjectId } = require("mongodb");
+const XLSX = require("xlsx");
 
 exports.getAllUsers = async () => {
   return await UserModel.find();
@@ -130,11 +131,23 @@ exports.deleteUser = async (id) => {
   return await UserModel.findByIdAndDelete(id);
 };
 
+exports.insertManyUser = async (data) => {
+  return await UserModel.insertMany(data);
+};
+
 exports.getAllWorkersOfSupervisor = async (id) => {
-  console.log(id);
+  // console.log(id);
   let workerRole = await RoleModel.findOne({ name: "worker" });
   return await UserModel.find({
     roles: workerRole._id,
     supervisor: ObjectId(id),
   });
+};
+
+exports.excelToJson = async (filePath) => {
+  const wb = XLSX.readFile(filePath);
+  const ws = wb.Sheets["Sheet1"];
+  const data = XLSX.utils.sheet_to_json(ws);
+  // console.log(data);
+  return data;
 };
