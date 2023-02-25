@@ -10,28 +10,7 @@ const {
 } = require("../controllers/task.controller");
 const { getAddNewTaskDetails } = require("../controllers/combine.controller");
 const { authJwt } = require("../middlewares");
-const multer = require("multer");
-const folderConfig = require("../config/folder.config");
-
-const imageStorage = multer.diskStorage({
-  // Destination to store image
-  destination: `${folderConfig.TASK_FOLDER}`,
-  filename: (req, file, cb) => {
-    cb(null, file.originalname);
-    // file.originalname is name of the field (image)
-  },
-});
-
-const imageUpload = multer({
-  storage: imageStorage,
-  fileFilter(req, file, cb) {
-    // if (!file.originalname.match(/\.(png|jpg)$/)) {
-    //   // upload only png and jpg format
-    //   return cb(new Error("Please upload a Image in .png or .jpg format"));
-    // }
-    cb(undefined, true);
-  },
-});
+const upload = require("../middlewares/fileUpload");
 
 module.exports = function (app) {
   app.use(function (req, res, next) {
@@ -42,7 +21,11 @@ module.exports = function (app) {
     next();
   });
 
-  app.get("/api/task/:id", [authJwt.verifyToken, authJwt.checkRole], getAllTasks);
+  app.get(
+    "/api/task/:id",
+    [authJwt.verifyToken, authJwt.checkRole],
+    getAllTasks
+  );
 
   app.get(
     "/api/task_by_status/:id",
@@ -51,7 +34,11 @@ module.exports = function (app) {
   );
 
   //get todays task and task status count
-  app.get("/api/todays_task/:id", [authJwt.verifyToken, authJwt.checkRole], getTodaysTasks);
+  app.get(
+    "/api/todays_task/:id",
+    [authJwt.verifyToken, authJwt.checkRole],
+    getTodaysTasks
+  );
 
   //get todays task and task status count
   app.get("/api/task_names", [authJwt.verifyToken], getTaskName);
@@ -62,20 +49,14 @@ module.exports = function (app) {
   app.post(
     "/api/task",
     [authJwt.verifyToken, authJwt.checkRole],
-    imageUpload.array(
-      `${folderConfig.TASK_IMAGE_KEY}`,
-      folderConfig.TASK_MAX_IMAGES
-    ),
+    upload.imageUpload,
     createTask
   );
 
   app.put(
     "/api/task/:id",
     [authJwt.verifyToken, authJwt.checkRole],
-    imageUpload.array(
-      `${folderConfig.TASK_IMAGE_KEY}`,
-      folderConfig.TASK_MAX_IMAGES
-    ),
+    upload.imageUpload,
     updateTask
   );
 

@@ -40,7 +40,16 @@ exports.uploadBulkExcel = async (req, res) => {
     send.response(res, "success", Users, 200);
   } catch (err) {
     console.log(err);
-    send.response(res, err, [], 500);
+    if (err.code === "ENOENT") {
+      send.response(
+        res,
+        `File With Name ${req.body.filename} Not Found, Please send correct filename`,
+        [],
+        404
+      );
+    } else {
+      send.response(res, err, [], 500);
+    }
   }
 };
 

@@ -1,27 +1,6 @@
 const { authJwt } = require("../middlewares");
 const controller = require("../controllers/user.controller");
-const multer = require("multer");
-const folderConfig = require("../config/folder.config");
-
-const excelStorage = multer.diskStorage({
-  // Destination to store image
-  destination: `${folderConfig.EXCEL_FOLDER}`,
-  filename: (req, file, cb) => {
-    cb(null, file.originalname);
-    // file.originalname is name of the field (image)
-  },
-});
-
-const excelUpload = multer({
-  storage: excelStorage,
-  fileFilter(req, file, cb) {
-    // if (!file.originalname.match(/\.(png|jpg)$/)) {
-    //   // upload only png and jpg format
-    //   return cb(new Error("Please upload a Image in .png or .jpg format"));
-    // }
-    cb(undefined, true);
-  },
-});
+const upload = require("../middlewares/fileUpload");
 
 module.exports = function (app) {
   app.use(function (req, res, next) {
@@ -43,10 +22,7 @@ module.exports = function (app) {
   app.post(
     "/api/user/worker",
     [authJwt.verifyToken, authJwt.checkRole],
-    excelUpload.array(
-      `${folderConfig.WORKER_EXCEL_KEY}`,
-      folderConfig.WORKER_MAX_EXCEL
-    ),
+    upload.excelUpload,
     controller.uploadBulkExcel
   );
 
