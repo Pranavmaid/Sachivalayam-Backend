@@ -296,6 +296,7 @@ require("./app/routes/auth.routes")(app);
 require("./app/routes/user.routes")(app);
 require("./app/routes/task.routes")(app);
 require("./app/routes/zone.routes")(app);
+require("./app/routes/downloads.routes")(app);
 
 // simple route
 app.get("/", (req, res) => {
