@@ -11,12 +11,12 @@ exports.createDownloadsFile = async (req, res) => {
 };
 
 exports.getDownloadById = async (req, res) => {
-  if (req.body.filename == null || req.body.filename == undefined) {
+  if (req.query.filename == null || req.query.filename == undefined) {
     send.response(res, "File Name Not Provided", data, 404);
     return;
   }
   try {
-    var data = await DownloadService.findDownloadsFile(req.body.filename);
+    var data = await DownloadService.findDownloadsFile(req.query.filename);
     if (data == null) {
       send.response(res, "Download file not found", [], 404);
       return;
