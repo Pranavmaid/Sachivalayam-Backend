@@ -10,7 +10,7 @@ module.exports = function (app) {
     next();
   });
 
-  app.post(
+  app.get(
     "/api/getdownloadlink",
     [authJwt.verifyToken],
     controller.getDownloadById
