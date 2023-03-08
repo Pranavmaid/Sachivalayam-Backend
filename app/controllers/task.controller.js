@@ -179,6 +179,7 @@ exports.getAllTaskStatusForPortal = async (req, res) => {
         totalAssignedTask = totalAssignedTask + iterator.Count;
       } else if (iterator._id == "In-review") {
         inReviewTaskCount = iterator.Count;
+        totalAssignedTask = totalAssignedTask + iterator.Count;
       }
     }
     var mapData = {

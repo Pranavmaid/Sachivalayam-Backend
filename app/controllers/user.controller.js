@@ -48,7 +48,6 @@ exports.getAllWorkersAttendance = async (req, res) => {
       absent: absent,
       absentPercentage: absentPercentage,
     };
-    console.log(map);
     send.response(res, "success", map, 200);
   } catch (err) {
     console.log(err);
