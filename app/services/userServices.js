@@ -196,3 +196,12 @@ exports.excelToJson = async (filePath) => {
   // console.log(data);
   return data;
 };
+
+exports.getAllWorkersOfSupervisor = async (id) => {
+  // console.log(id);
+  let workerRole = await RoleModel.findOne({ name: "worker" });
+  return await UserModel.find({
+    roles: workerRole._id,
+    supervisor: ObjectId(id),
+  });
+};
