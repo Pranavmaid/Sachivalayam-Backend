@@ -28,6 +28,8 @@ module.exports = function (app) {
 
   app.get("/api/user/:id", [authJwt.verifyToken], controller.getUserById);
 
+  app.post("/api/user/worker/attendance", controller.getAllWorkersAttendance);
+
   app.post("/api/user", [authJwt.verifyToken], controller.createUser);
 
   app.put("/api/user/:id", [authJwt.verifyToken], controller.updateUser);

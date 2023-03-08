@@ -45,3 +45,15 @@ exports.deleteZone = async (req, res) => {
     send.response(res, err, [], 500);
   }
 };
+
+exports.getZoneList = async (req, res) => {
+  try {
+    var Zones = [];
+    Zones = await ZoneService.getZoneDataList();
+
+    send.response(res, "success", Zones, 200);
+  } catch (err) {
+    console.log("Error: ", err);
+    return send.response(res, err, [], 500);
+  }
+};

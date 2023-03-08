@@ -10,6 +10,8 @@ module.exports = function (app) {
     next();
   });
 
+  app.get("/api/all_zone", controller.getZoneList);
+
   app.get("/api/zone", [authJwt.verifyToken], controller.getAllZones);
 
   app.post("/api/zone", [authJwt.verifyToken], controller.createZone);

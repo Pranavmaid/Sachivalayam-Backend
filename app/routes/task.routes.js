@@ -7,6 +7,10 @@ const {
   deleteTask,
   getTaskName,
   getAllStatusTasks,
+  getAllTaskStatusForPortal,
+  getBarGraphData,
+  getAllTaskData,
+  getPieGraphData,
 } = require("../controllers/task.controller");
 const { getAddNewTaskDetails } = require("../controllers/combine.controller");
 const { authJwt } = require("../middlewares");
@@ -58,6 +62,34 @@ module.exports = function (app) {
     [authJwt.verifyToken, authJwt.checkRole],
     upload.imageUpload,
     updateTask
+  );
+
+  //get all task status count
+  app.get(
+    "/api/task_status_count",
+    // [authJwt.verifyToken],
+    getAllTaskStatusForPortal
+  );
+
+  //get all tasks
+  app.post(
+    "/api/task_data",
+    // [authJwt.verifyToken],
+    getAllTaskData
+  );
+
+  //get Bar graph Data
+  app.post(
+    "/api/task_BarGraph",
+    // [authJwt.verifyToken],
+    getBarGraphData
+  );
+
+  //get Pie graph Data
+  app.post(
+    "/api/task_PieGraph",
+    // [authJwt.verifyToken],
+    getPieGraphData
   );
 
   app.get("/api/task_by_id/:id", [authJwt.verifyToken], getTaskById);

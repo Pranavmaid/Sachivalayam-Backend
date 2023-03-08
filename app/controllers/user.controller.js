@@ -21,6 +21,41 @@ exports.getAllWorkers = async (req, res) => {
   }
 };
 
+exports.getAllWorkersAttendance = async (req, res) => {
+  try {
+    var total = 0;
+    var present = 0;
+    var presentPercentage = 0;
+    var absent = 0;
+    var absentPercentage = 0;
+    const Users = await UserService.getAllWorkerAttendanceInfo(req.body);
+    for (const iterator of Users) {
+      total = total + 1;
+      if (iterator.present == true) {
+        present = present + 1;
+      } else if (iterator.present == false) {
+        absent = absent + 1;
+      }
+    }
+    if (total > 0) {
+      presentPercentage = (present / total) * 100;
+      absentPercentage = (absent / total) * 100;
+    }
+    var map = {
+      total: total,
+      present: present,
+      presentPercentage: presentPercentage,
+      absent: absent,
+      absentPercentage: absentPercentage,
+    };
+    console.log(map);
+    send.response(res, "success", map, 200);
+  } catch (err) {
+    console.log(err);
+    send.response(res, err, [], 500);
+  }
+};
+
 exports.uploadBulkExcel = async (req, res) => {
   if (req.body.filename == null || req.body.filename == undefined) {
     send.response(res, "File name not found", [], 404);
