@@ -135,13 +135,58 @@ exports.insertManyUser = async (data) => {
   return await UserModel.insertMany(data);
 };
 
-exports.getAllWorkersOfSupervisor = async (id) => {
-  // console.log(id);
+exports.getAllWorkerAttendanceInfo = async (filter) => {
+  var start = new Date(filter.startDate);
+
+  var end = new Date(filter.endDate);
   let workerRole = await RoleModel.findOne({ name: "worker" });
-  return await UserModel.find({
-    roles: workerRole._id,
-    supervisor: ObjectId(id),
-  });
+  return await UserModel.aggregate([
+    {
+      $match: {
+        roles: workerRole._id,
+      },
+    },
+    {
+      $lookup: {
+        from: "tasks",
+        let: {
+          nameCheck: "$name",
+        },
+        pipeline: [
+          {
+            $match: {
+              createdAt: {
+                $gte: new Date(start),
+                $lte: new Date(end),
+              },
+              $expr: {
+                $in: ["$$nameCheck", "$assigned_worker"],
+              },
+            },
+          },
+        ],
+        as: "result",
+      },
+    },
+    {
+      $project: {
+        present: {
+          $cond: [
+            {
+              $ifNull: [
+                {
+                  $arrayElemAt: ["$result", 0],
+                },
+                null,
+              ],
+            },
+            true,
+            false,
+          ],
+        },
+      },
+    },
+  ]);
 };
 
 exports.excelToJson = async (filePath) => {

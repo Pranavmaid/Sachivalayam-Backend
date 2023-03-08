@@ -56,3 +56,32 @@ exports.getAssignedWorkAreas = async (id) => {
     },
   ]);
 };
+
+exports.getZoneDataList = async () => {
+  return await ZoneModel.aggregate([
+    {
+      $unwind: {
+        path: "$ward",
+      },
+    },
+    {
+      $unwind: {
+        path: "$ward.sachivalyam",
+      },
+    },
+    {
+      $group: {
+        _id: "$__v",
+        zone: {
+          $addToSet: "$name",
+        },
+        ward: {
+          $addToSet: "$ward.name",
+        },
+        sachivalyam: {
+          $addToSet: "$ward.sachivalyam.name",
+        },
+      },
+    },
+  ]);
+};

@@ -9,11 +9,11 @@ const Zone = db.zone;
 exports.getAllTasks = async (req, res) => {
   if (req.params.id == null) {
     send.response(res, "User Id Not Found", {}, 404);
+    return;
   }
   try {
     let zone = await zoneExtract.extractWardZoneSachivalayamName(req, res);
-    if(zone.length <=0)
-    {
+    if (zone.length <= 0) {
       send.response(res, "Zone Not found", [], 404);
       return;
     }
@@ -22,16 +22,23 @@ exports.getAllTasks = async (req, res) => {
     req.user.zone = zone[0].zonename;
     req.user.sachivalyam = zone[0].sachivalyam;
 
-    const Tasks = await TaskService.getAllTasks(req.params.id, req.role, req.user);
+    const Tasks = await TaskService.getAllTasks(
+      req.params.id,
+      req.role,
+      req.user
+    );
     send.response(res, "success", Tasks, 200);
+    return;
   } catch (err) {
     send.response(res, err, [], 500);
+    return;
   }
 };
 
 exports.getAllStatusTasks = async (req, res) => {
   if (req.params.id == null) {
     send.response(res, "User Id Not Found", {}, 404);
+    return;
   }
 
   try {
@@ -41,8 +48,7 @@ exports.getAllStatusTasks = async (req, res) => {
 
     let zone = await zoneExtract.extractWardZoneSachivalayamName(req, res);
 
-    if(zone.length <=0)
-    {
+    if (zone.length <= 0) {
       send.response(res, "Zone Not found", [], 404);
       return;
     }
@@ -59,7 +65,7 @@ exports.getAllStatusTasks = async (req, res) => {
       }
       Tasks = await TaskService.getAllStatusTasks(
         req.params.id,
-        req.role, 
+        req.role,
         req.user,
         req.query.taskStatus
       );
@@ -67,24 +73,137 @@ exports.getAllStatusTasks = async (req, res) => {
 
     if (Tasks.length <= 0) {
       send.response(res, "Data Not found", Tasks, 200);
+      return;
     } else {
       send.response(res, "success", Tasks, 200);
+      return;
     }
   } catch (err) {
     send.response(res, err, [], 500);
+    return;
+  }
+};
+
+exports.getAllTaskData = async (req, res) => {
+  try {
+    var Tasks = [];
+    Tasks = await TaskService.getTaskData(req.body);
+
+    send.response(res, "success", Tasks, 200);
+  } catch (err) {
+    console.log("Error: ", err);
+    return send.response(res, err, [], 500);
+  }
+};
+
+exports.getBarGraphData = async (req, res) => {
+  try {
+    var Tasks = [];
+    Tasks = await TaskService.getBarGraphDataList(req.body);
+    let data = [];
+
+    for (const iterator of Tasks) {
+      var mapData = {};
+      mapData["date"] = iterator._id;
+      let actualCount = [];
+      let barGraphCount = [];
+      index = iterator.status.indexOf("Completed");
+      if (index != -1) {
+        actualCount.push(iterator.statusCount[index], iterator.totalTask);
+        barGraphCount.push(
+          iterator.statusCount[index],
+          iterator.totalTask + iterator.statusCount[index]
+        );
+      } else {
+        actualCount.push(0, iterator.totalTask);
+        barGraphCount.push(0, iterator.totalTask);
+      }
+      mapData["actualCount"] = actualCount;
+      mapData["barGraphCount"] = barGraphCount;
+      data.push(mapData);
+    }
+
+    send.response(res, "success", data, 200);
+  } catch (err) {
+    console.log("Error: ", err);
+    return send.response(res, err, [], 500);
+  }
+};
+
+exports.getPieGraphData = async (req, res) => {
+  try {
+    var total = 0;
+    var completed = 0;
+    var completedPercent = 0;
+    var Tasks = [];
+    Tasks = await TaskService.getPieGraphDataList(req.body);
+    for (const iterator of Tasks) {
+      total = total + iterator.count;
+      if (iterator._id == "Completed") {
+        completed = iterator.count;
+      }
+    }
+    if (total != 0) {
+      completedPercent = (completed / total) * 100;
+    }
+
+    var mapData = {
+      total: total,
+      completed: completed,
+      completedPercent: completedPercent,
+    };
+
+    send.response(res, "success", mapData, 200);
+  } catch (err) {
+    console.log("Error: ", err);
+    return send.response(res, err, [], 500);
+  }
+};
+
+exports.getAllTaskStatusForPortal = async (req, res) => {
+  try {
+    var completedTaskCount = 0;
+    var ongoingTaskCount = 0;
+    var inReviewTaskCount = 0;
+    var totalAssignedTask = 0;
+
+    var Tasks = [];
+    Tasks = await TaskService.getAllTaskStatusCount();
+
+    for (const iterator of Tasks) {
+      if (iterator._id == "Completed") {
+        completedTaskCount = iterator.Count;
+        totalAssignedTask = totalAssignedTask + iterator.Count;
+      } else if (iterator._id == "Ongoing") {
+        ongoingTaskCount = iterator.Count;
+        totalAssignedTask = totalAssignedTask + iterator.Count;
+      } else if (iterator._id == "In-review") {
+        inReviewTaskCount = iterator.Count;
+      }
+    }
+    var mapData = {
+      totalAssignedTask: totalAssignedTask,
+      inReview: inReviewTaskCount,
+      ongoing: ongoingTaskCount,
+      completed: completedTaskCount,
+    };
+
+    send.response(res, "success", mapData, 200);
+  } catch (err) {
+    console.log("Error: ", err);
+    return send.response(res, err, [], 500);
   }
 };
 
 exports.getTodaysTasks = async (req, res) => {
   if (req.params.id == null) {
     send.response(res, "User Id Not Found", {}, 404);
+    return;
   }
   try {
-
     let zone = await zoneExtract.extractWardZoneSachivalayamName(req, res);
 
-    if(zone == undefined || zone.length <= 0)
-    {
+    if (zone == undefined || zone.length <= 0) {
       send.response(res, "Zone Not found", [], 404);
       return;
     }
@@ -93,7 +212,11 @@ exports.getTodaysTasks = async (req, res) => {
     req.user.zonename = zone[0].zonename;
     req.user.sachivalyamname = zone[0].sachivalyamname;
 
-    const Tasks = await TaskService.getTodaysTasks(req.params.id, req.role, req.user);
+    const Tasks = await TaskService.getTodaysTasks(
+      req.params.id,
+      req.role,
+      req.user
+    );
     send.response(res, "success", Tasks, 200);
   } catch (err) {
     send.response(res, err, {}, 500);
@@ -139,8 +262,7 @@ exports.createTask = async (req, res) => {
 
   let zone = await zoneExtract.extractWardZoneSachivalayamName(req, res);
 
-  if(zone.length <=0)
-  {
+  if (zone.length <= 0) {
     send.response(res, "Zone Not found", [], 404);
     return;
   }
@@ -185,14 +307,13 @@ exports.updateTask = async (req, res) => {
       return;
     }
     var imageLink = [];
-    if (typeof req.body.after_image == "object")
-    {
+    if (typeof req.body.after_image == "object") {
       for (const iterator of req.body.after_image) {
         imageLink.push(
           `${config.baseURL}/${folderConfig.TASK_IMAGE_KEY}/${iterator}`
         );
       }
-    } else if(typeof req.body.after_image == "string") {
+    } else if (typeof req.body.after_image == "string") {
       imageLink.push(
         `${config.baseURL}/${folderConfig.TASK_IMAGE_KEY}/${req.body.after_image}`
       );
