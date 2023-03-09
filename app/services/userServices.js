@@ -137,8 +137,47 @@ exports.insertManyUser = async (data) => {
 
 exports.getAllWorkerAttendanceInfo = async (filter) => {
   var start = new Date(filter.startDate);
-
   var end = new Date(filter.endDate);
+  let query = [
+    {
+      $match: {
+        createdAt: {
+          $gte: new Date(start),
+          $lte: new Date(end),
+        },
+        $expr: {
+          $in: ["$$nameCheck", "$assigned_worker"],
+        },
+      },
+    },
+  ];
+  if (filter.Zone != undefined && filter.Zone != null) {
+    query.push({
+      $match: {
+        zone: {
+          $in: filter.Zone,
+        },
+      },
+    });
+  }
+  if (filter.Ward != undefined && filter.Ward != null) {
+    query.push({
+      $match: {
+        ward: {
+          $in: filter.Ward,
+        },
+      },
+    });
+  }
+  if (filter.Swachlayam != undefined && filter.Swachlayam != null) {
+    query.push({
+      $match: {
+        sachivalyam: {
+          $in: filter.Swachlayam,
+        },
+      },
+    });
+  }
   let workerRole = await RoleModel.findOne({ name: "worker" });
   return await UserModel.aggregate([
     {
@@ -152,19 +191,7 @@ exports.getAllWorkerAttendanceInfo = async (filter) => {
         let: {
           nameCheck: "$name",
         },
-        pipeline: [
-          {
-            $match: {
-              createdAt: {
-                $gte: new Date(start),
-                $lte: new Date(end),
-              },
-              $expr: {
-                $in: ["$$nameCheck", "$assigned_worker"],
-              },
-            },
-          },
-        ],
+        pipeline: query,
         as: "result",
       },
     },
