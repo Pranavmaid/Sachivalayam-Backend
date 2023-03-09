@@ -20,10 +20,70 @@ exports.getTaskData = async (filter) => {
   const pageSize = filter.limit ? parseInt(filter.limit) : 0;
   const page1 = filter.page ? parseInt(filter.page) : 0;
   const page = page1 * pageSize;
-  return await TaskModel.find({})
-    .sort({ createdAt: -1 })
-    .skip(page)
-    .limit(pageSize);
+  let query = [];
+  if (filter.startDate != undefined && filter.endDate != undefined) {
+    let sd = new Date(filter.startDate);
+    let ed = new Date(filter.endDate);
+    query.push({
+      $match: {
+        createdAt: {
+          $gte: sd,
+          $lte: ed,
+        },
+      },
+    });
+  }
+  if (filter.Zone != undefined && filter.Zone != null) {
+    query.push({
+      $match: {
+        zone: {
+          $in: filter.Zone,
+        },
+      },
+    });
+  }
+  if (filter.Ward != undefined && filter.Ward != null) {
+    query.push({
+      $match: {
+        ward: {
+          $in: filter.Ward,
+        },
+      },
+    });
+  }
+  if (filter.Swachlayam != undefined && filter.Swachlayam != null) {
+    query.push({
+      $match: {
+        sachivalyam: {
+          $in: filter.Swachlayam,
+        },
+      },
+    });
+  }
+  if (filter.Status != undefined && filter.Status != null) {
+    query.push({
+      $match: {
+        task_status: {
+          $in: filter.Status,
+        },
+      },
+    });
+  }
+  query.push(
+    {
+      $sort: {
+        createdAt: -1,
+      },
+    },
+    {
+      $skip: page,
+    },
+    {
+      $limit: pageSize,
+    }
+  );
+  console.log(filter);
+  return await TaskModel.aggregate(query);
 };
 
 exports.getAllTaskStatusCount = async () => {
