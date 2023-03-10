@@ -12,7 +12,11 @@ module.exports = function (app) {
 
   app.get("/api/all_zone", controller.getZoneList);
 
-  app.get("/api/zone", [authJwt.verifyToken], controller.getAllZones);
+  app.get(
+    "/api/zone",
+    // [authJwt.verifyToken],
+    controller.getAllZones
+  );
 
   app.post("/api/zone", [authJwt.verifyToken], controller.createZone);
 
