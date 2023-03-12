@@ -232,3 +232,107 @@ exports.getAllWorkersOfSupervisor = async (id) => {
     supervisor: ObjectId(id),
   });
 };
+
+exports.getAllSecretary = async () => {
+  // console.log(id);
+  let role = await RoleModel.findOne({ name: "secretary" });
+  return await UserModel.aggregate([
+    {
+      $match: {
+        roles: role._id,
+      },
+    },
+    {
+      $lookup: {
+        from: "zones",
+        let: {
+          zoneCheck: "$zone",
+          wardCheck: "$ward",
+          sachivalyamCheck: "$sachivalyam",
+        },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $and: [
+                  {
+                    $eq: ["$_id", "$$zoneCheck"],
+                  },
+                ],
+              },
+            },
+          },
+          {
+            $unwind: {
+              path: "$ward",
+            },
+          },
+          {
+            $match: {
+              $expr: {
+                $and: [
+                  {
+                    $eq: ["$ward._id", "$$wardCheck"],
+                  },
+                ],
+              },
+            },
+          },
+          {
+            $unwind: {
+              path: "$ward.sachivalyam",
+            },
+          },
+          {
+            $match: {
+              $expr: {
+                $and: [
+                  {
+                    $eq: ["$ward.sachivalyam._id", "$$sachivalyamCheck"],
+                  },
+                ],
+              },
+            },
+          },
+          {
+            $project: {
+              zonename: "$name",
+              wardname: "$ward.name",
+              sachivalyamname: "$ward.sachivalyam.name",
+            },
+          },
+        ],
+        as: "zoneResult",
+      },
+    },
+    {
+      $unwind: {
+        path: "$zoneResult",
+      },
+    },
+    {
+      $project: {
+        name: "$name",
+        email: "$email",
+        phone: "$phone",
+        zone: "$zoneResult.zonename",
+        ward: "$zoneResult.wardname",
+        sachivalyam: "$zoneResult.sachivalyamname",
+        roles: "$result.name",
+        gender: "$gender",
+        age: "$age",
+        workingSlots: "$workingSlots",
+        createdAt: "$createdAt",
+        updatedAt: "$updatedAt",
+      },
+    },
+  ]);
+};
+
+exports.getAllSecretaryCount = async () => {
+  // console.log(id);
+  let role = await RoleModel.findOne({ name: "secretary" });
+  return await UserModel.countDocuments({
+    roles: role._id,
+  });
+};

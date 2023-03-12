@@ -11,6 +11,7 @@ const Zone = require("../models/zone.model");
 const { ObjectId } = require("mongodb");
 
 exports.signup = (req, res) => {
+  console.log("signup req: ", req.body);
   if (
     req.body.name == null ||
     req.body.phone == null ||
@@ -47,30 +48,29 @@ exports.signup = (req, res) => {
     gender: req.body.gender,
     age: req.body.age,
     supervisor: req.body.supervisor,
-    workingSlots: req.body.workingSlots
+    workingSlots: req.body.workingSlots,
   });
 
   if (req.body.roles) {
-    console.log(req.body.roles);
     Role.findOne(
       {
         name: req.body.roles,
       },
       (err, roles) => {
-        console.log(roles);
         if (err) {
+          console.log(err);
           send.response(res, err, [], 500);
           return;
         }
         user.roles = roles._id;
         if (req.body.zone) {
-          console.log(req.body.zone);
           Zone.findOne(
             {
               name: req.body.zone,
             },
             (err, zone) => {
               if (err) {
+                console.log(err);
                 send.response(res, err, [], 500);
                 return;
               }
@@ -114,10 +114,10 @@ exports.signup = (req, res) => {
                   ],
                   (err, ward) => {
                     if (err) {
+                      console.log(err);
                       send.response(res, err, [], 500);
                       return;
                     }
-
                     if (ward.length <= 0) {
                       send.response(
                         res,
@@ -136,6 +136,7 @@ exports.signup = (req, res) => {
 
                     user.save((err, updatedUser) => {
                       if (err) {
+                        console.log(err);
                         send.response(res, err, [], 500);
                         return;
                       }
@@ -143,6 +144,7 @@ exports.signup = (req, res) => {
                       updatedUser.ward = ward[0].wardname;
                       updatedUser.sachivalyam = ward[0].sachivalyamname;
                       updatedUser.zone = zone.name;
+                      console.log("User saved: ", updatedUser);
                       send.response(
                         res,
                         "success",
@@ -150,9 +152,9 @@ exports.signup = (req, res) => {
                           name: updatedUser.name,
                           email: updatedUser.email,
                           phone: updatedUser.phone,
-                          ward: updatedUser.ward,
-                          zone: updatedUser.zone,
-                          sachivalyam: updatedUser.sachivalyam,
+                          ward: ward[0].wardname,
+                          zone: zone.name,
+                          sachivalyam: ward[0].sachivalyamname,
                           gender: updatedUser.gender,
                           age: updatedUser.age,
                           workingSlots: updatedUser.workingSlots,
@@ -175,6 +177,7 @@ exports.signup = (req, res) => {
   } else {
     Role.findOne({ name: "worker" }, (err, role) => {
       if (err) {
+        console.log(err);
         send.response(res, err, [], 500);
         return;
       }
