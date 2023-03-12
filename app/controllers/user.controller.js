@@ -11,6 +11,18 @@ exports.getAllUsers = async (req, res) => {
   }
 };
 
+exports.getAllSecretory = async (req, res) => {
+  try {
+    const Users = await UserService.getAllSecretary();
+    const UsersCount = await UserService.getAllSecretaryCount();
+    console.log(UsersCount);
+    send.response(res, "success", { secretory: Users, count: UsersCount }, 200);
+  } catch (err) {
+    console.log(err);
+    send.response(res, err, [], 500);
+  }
+};
+
 exports.getAllWorkers = async (req, res) => {
   try {
     const Users = await UserService.getAllWorkersOfSupervisor(req.userId);

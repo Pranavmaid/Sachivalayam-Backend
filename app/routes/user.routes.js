@@ -20,6 +20,12 @@ module.exports = function (app) {
   );
 
   app.post(
+    "/api/user/secretary",
+    // [authJwt.verifyToken, authJwt.checkRole],
+    controller.getAllSecretory
+  );
+
+  app.post(
     "/api/user/worker",
     [authJwt.verifyToken, authJwt.checkRole],
     upload.excelUpload,
