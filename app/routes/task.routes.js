@@ -67,30 +67,18 @@ module.exports = function (app) {
   //get all task status count
   app.get(
     "/api/task_status_count",
-    // [authJwt.verifyToken],
+    [authJwt.verifyToken],
     getAllTaskStatusForPortal
   );
 
   //get all tasks
-  app.post(
-    "/api/task_data",
-    // [authJwt.verifyToken],
-    getAllTaskData
-  );
+  app.post("/api/task_data", [authJwt.verifyToken], getAllTaskData);
 
   //get Bar graph Data
-  app.post(
-    "/api/task_BarGraph",
-    // [authJwt.verifyToken],
-    getBarGraphData
-  );
+  app.post("/api/task_BarGraph", [authJwt.verifyToken], getBarGraphData);
 
   //get Pie graph Data
-  app.post(
-    "/api/task_PieGraph",
-    // [authJwt.verifyToken],
-    getPieGraphData
-  );
+  app.post("/api/task_PieGraph", [authJwt.verifyToken], getPieGraphData);
 
   app.get("/api/task_by_id/:id", [authJwt.verifyToken], getTaskById);
 

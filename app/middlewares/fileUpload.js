@@ -15,6 +15,7 @@ exports.excelUpload = async (req, res, next) => {
   const upload = multer({
     storage: excelStorage,
     fileFilter(req, file, cb) {
+      console.log(file.originalname);
       if (
         !file.originalname.match(
           /\.(.xls|xlsx|xlsb|xltx|xltm|xls|xlt|xml|csv)$/
@@ -25,6 +26,7 @@ exports.excelUpload = async (req, res, next) => {
           new multer.MulterError("Please upload excel with right excel format")
         );
       }
+      req.filename = file.originalname
       cb(undefined, true);
     },
   }).array(`${folderConfig.WORKER_EXCEL_KEY}`, folderConfig.WORKER_MAX_EXCEL);
