@@ -57,6 +57,60 @@ exports.getAssignedWorkAreas = async (id) => {
   ]);
 };
 
+exports.getWorkAreas = async (filter) => {
+  let query = [];
+  // console.log(filter);
+  if (filter.Zone != undefined && filter.Zone != null) {
+    query.push({
+      $match: {
+        name: filter.Zone.toString(),
+      },
+    });
+  }
+  query.push(
+    {
+      $unwind: {
+        path: "$ward",
+      },
+    },
+    {
+      $unwind: {
+        path: "$ward.sachivalyam",
+      },
+    }
+  );
+  if (filter.Ward != undefined && filter.Ward != null) {
+    query.push({
+      $match: {
+        "ward.name": filter.Ward.toString(),
+      },
+    });
+  }
+  if (filter.Swachlayam != undefined && filter.Swachlayam != null) {
+    query.push({
+      $match: {
+        "ward.sachivalyam.name": filter.Swachlayam.toString(),
+      },
+    });
+  }
+  query.push(
+    {
+      $unwind: {
+        path: "$ward.sachivalyam.areas",
+      },
+    },
+    {
+      $group: {
+        _id: "$__v",
+        areas: {
+          $push: "$ward.sachivalyam.areas.name",
+        },
+      },
+    }
+  );
+  return await ZoneModel.aggregate(query);
+};
+
 exports.getZoneDataList = async () => {
   return await ZoneModel.aggregate([
     {
@@ -84,4 +138,54 @@ exports.getZoneDataList = async () => {
       },
     },
   ]);
+};
+
+exports.getZoneDataIds = async (filter) => {
+  let query = [
+    {
+      $unwind: {
+        path: "$ward",
+      },
+    },
+    {
+      $unwind: {
+        path: "$ward",
+      },
+    },
+    {
+      $unwind: {
+        path: "$ward.sachivalyam",
+      },
+    },
+  ];
+  if (filter.zone != undefined && filter.zone != null) {
+    query.push({
+      $match: {
+        name: filter.zone.toString(),
+      },
+    });
+  }
+  if (filter.ward != undefined && filter.ward != null) {
+    query.push({
+      $match: {
+        "ward.name": filter.ward.toString(),
+      },
+    });
+  }
+  if (filter.sachivalyam != undefined && filter.sachivalyam != null) {
+    query.push({
+      $match: {
+        "ward.sachivalyam.name": filter.sachivalyam.toString(),
+      },
+    });
+  }
+  query.push({
+    $project: {
+      wardid: "$ward._id",
+      sachivalyamid: "$ward.sachivalyam._id",
+    },
+  });
+  // console.log(query);
+  // console.log(filter);
+  return await ZoneModel.aggregate(query);
 };

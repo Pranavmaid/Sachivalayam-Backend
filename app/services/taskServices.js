@@ -244,12 +244,13 @@ exports.getPieGraphDataList = async (filter) => {
     });
   }
   query.push({
-    $group: {
-      _id: "$task_status",
-      count: {
-        $count: {},
-      },
-    },
+    '$group': {
+      '_id': '$task_status', 
+      'areas': {
+        '$addToSet': '$from_work_area', 
+        '$addToSet': '$to_work_area'
+      }
+    }
   });
 
   return await TaskModel.aggregate(query);

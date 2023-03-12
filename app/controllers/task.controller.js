@@ -1,4 +1,5 @@
 const TaskService = require("../services/taskServices");
+const ZoneService = require("../services/zoneServices");
 const send = require("../services/responseServices.js");
 const config = require("../config/auth.config.js");
 const folderConfig = require("../config/folder.config.js");
@@ -137,16 +138,23 @@ exports.getPieGraphData = async (req, res) => {
     var completedPercent = 0;
     var Tasks = [];
     Tasks = await TaskService.getPieGraphDataList(req.body);
+    const ZoneCheck = await ZoneService.getWorkAreas(req.body);
+    // console.log(Tasks, ZoneCheck);
     for (const iterator of Tasks) {
-      total = total + iterator.count;
       if (iterator._id == "Completed") {
-        completed = iterator.count;
+        if (iterator.areas != null) {
+          completed = iterator.areas.length;
+        }
+      }
+    }
+    if (ZoneCheck.length > 0) {
+      if (ZoneCheck[0].areas != null) {
+        total = ZoneCheck[0].areas.length;
       }
     }
     if (total != 0) {
       completedPercent = (completed / total) * 100;
     }
-
     var mapData = {
       total: total,
       completed: completed,
@@ -238,7 +246,7 @@ exports.createTask = async (req, res) => {
     send.response(res, "No data found", {}, 404);
     return;
   }
-  console.log("received add task request", req.body);
+  // console.log("received add task request", req.body);
   if (req.body.before_image == null || req.body.before_image.length == 0) {
     send.response(res, "Please send before images", {}, 404);
     return;
@@ -302,7 +310,7 @@ exports.updateTask = async (req, res) => {
       send.response(res, err, [], 500);
     }
   } else if (req.role === "secretary") {
-    console.log("received update task request", req.body);
+    // console.log("received update task request", req.body);
     if (req.body.after_image == null || req.body.after_image.length == 0) {
       send.response(res, "Please send after images also", {}, 404);
       return;

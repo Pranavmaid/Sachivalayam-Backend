@@ -31,6 +31,13 @@ module.exports = function (app) {
     upload.excelUpload,
     controller.uploadBulkExcel
   );
+  
+  app.post(
+    "/api/user/secretory_bulk_upload",
+    [authJwt.verifyToken, authJwt.checkRole],
+    upload.excelUpload,
+    controller.uploadBulkSecretoryExcel
+  );
 
   app.get("/api/user/:id", [authJwt.verifyToken], controller.getUserById);
 

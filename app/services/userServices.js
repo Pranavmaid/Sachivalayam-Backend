@@ -2,9 +2,21 @@ const UserModel = require("../models/user.model");
 const RoleModel = require("../models/role.model");
 const { ObjectId } = require("mongodb");
 const XLSX = require("xlsx");
+var bcrypt = require("bcryptjs");
 
 exports.getAllUsers = async () => {
   return await UserModel.find();
+};
+
+exports.usersEmailCheck = async (id,emailCheck) => {
+  var mapData = {}
+  if(id!=undefined&&id!=null){
+    mapData['_id'] = {$ne:ObjectId(id)}
+  }
+  if(emailCheck!=undefined&&emailCheck!=null){
+    mapData['email'] = emailCheck
+  }
+  return await UserModel.findOne(mapData);
 };
 
 exports.getAllWorkers = async () => {
@@ -124,6 +136,9 @@ exports.getUserById = async (id) => {
 };
 
 exports.updateUser = async (id, user) => {
+  if (user.password != undefined && user.password != null) {
+    user.password = bcrypt.hashSync(user.password, 8);
+  }
   return await UserModel.findByIdAndUpdate(id, user);
 };
 

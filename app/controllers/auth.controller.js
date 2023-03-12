@@ -11,7 +11,7 @@ const Zone = require("../models/zone.model");
 const { ObjectId } = require("mongodb");
 
 exports.signup = (req, res) => {
-  console.log("signup req: ", req.body);
+  // console.log("signup req: ", req.body);
   if (
     req.body.name == null ||
     req.body.phone == null ||
@@ -144,7 +144,7 @@ exports.signup = (req, res) => {
                       updatedUser.ward = ward[0].wardname;
                       updatedUser.sachivalyam = ward[0].sachivalyamname;
                       updatedUser.zone = zone.name;
-                      console.log("User saved: ", updatedUser);
+                      // console.log("User saved: ", updatedUser);
                       send.response(
                         res,
                         "success",
