@@ -126,6 +126,13 @@ exports.uploadBulkSecretoryExcel = async (req, res) => {
             data[i].roles = secretaryRole._id;
           }
           data[i]["workingSlots"] = data[i]["workingSlots"].split(",");
+          if (
+            data[i]["password"] != null &&
+            data[i]["password"] != undefined &&
+            data[i]["password"] != ""
+          ) {
+            data[i]["password"] = bcrypt.hashSync(data[i]["password"], 8);
+          }
           // console.log(data[i]);
           // console.log(zoneCheck,emailCheck);
           await UserModel.create(data[i])
