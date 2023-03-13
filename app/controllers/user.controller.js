@@ -2,6 +2,7 @@ const UserService = require("../services/userServices");
 const ZoneService = require("../services/zoneServices");
 const send = require("../services/responseServices.js");
 const UserModel = require("../models/user.model");
+const RoleModel = require("../models/role.model");
 
 exports.getAllUsers = async (req, res) => {
   try {
