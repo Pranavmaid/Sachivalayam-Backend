@@ -77,11 +77,14 @@ exports.uploadBulkExcel = async (req, res) => {
   try {
     let data = await UserService.excelToJson(`./EXCEL/${req.body.filename}`);
     if (data != undefined && data.length > 0) {
+      let workerRole = await RoleModel.findOne({ name: "worker" });
       for (let i = 0; i < data.length; i++) {
         data[i]["ward"] = req.user.ward;
         data[i]["zone"] = req.user.zone;
         data[i]["sachivalyam"] = req.user.sachivalyam;
         data[i]["workingSlots"] = data[i]["workingSlots"].split(",");
+        data[i]["supervisor"] = req.user._id;
+        data[i]["roles"] = workerRole._id;
       }
     }
     const Users = await UserService.insertManyUser(data);
