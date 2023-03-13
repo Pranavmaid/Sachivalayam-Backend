@@ -198,13 +198,20 @@ exports.getUserById = async (req, res) => {
 
 exports.updateUser = async (req, res) => {
   try {
-    let emailCheck = await UserService.usersEmailCheck(
-      req.params.id,
-      req.body.email
-    );
-    if (emailCheck != undefined || emailCheck != null) {
-      send.response(res, `Email: ${req.body.email} is already in use`, {}, 404);
-      return;
+    if (req.body.email != undefined && req.body.email != null) {
+      let emailCheck = await UserService.usersEmailCheck(
+        req.params.id,
+        req.body.email
+      );
+      if (emailCheck != undefined || emailCheck != null) {
+        send.response(
+          res,
+          `Email: ${req.body.email} is already in use`,
+          {},
+          404
+        );
+        return;
+      }
     }
     let zoneCheck = await ZoneService.getZoneDataIds(req.body);
     if (zoneCheck.length > 0) {
