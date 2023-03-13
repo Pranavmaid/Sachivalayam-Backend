@@ -8,13 +8,13 @@ exports.getAllUsers = async () => {
   return await UserModel.find();
 };
 
-exports.usersEmailCheck = async (id,emailCheck) => {
-  var mapData = {}
-  if(id!=undefined&&id!=null){
-    mapData['_id'] = {$ne:ObjectId(id)}
+exports.usersEmailCheck = async (id, emailCheck) => {
+  var mapData = {};
+  if (id != undefined && id != null) {
+    mapData["_id"] = { $ne: ObjectId(id) };
   }
-  if(emailCheck!=undefined&&emailCheck!=null){
-    mapData['email'] = emailCheck
+  if (emailCheck != undefined && emailCheck != null) {
+    mapData["email"] = emailCheck;
   }
   return await UserModel.findOne(mapData);
 };
@@ -184,11 +184,11 @@ exports.getAllWorkerAttendanceInfo = async (filter) => {
       },
     });
   }
-  if (filter.Swachlayam != undefined && filter.Swachlayam != null) {
+  if (filter.Sachivalyam != undefined && filter.Sachivalyam != null) {
     query.push({
       $match: {
         sachivalyam: {
-          $in: filter.Swachlayam,
+          $in: filter.Sachivalyam,
         },
       },
     });
