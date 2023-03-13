@@ -86,10 +86,10 @@ exports.getWorkAreas = async (filter) => {
       },
     });
   }
-  if (filter.Swachlayam != undefined && filter.Swachlayam != null) {
+  if (filter.Sachivalyam != undefined && filter.Sachivalyam != null) {
     query.push({
       $match: {
-        "ward.sachivalyam.name": filter.Swachlayam.toString(),
+        "ward.sachivalyam.name": filter.Sachivalyam.toString(),
       },
     });
   }

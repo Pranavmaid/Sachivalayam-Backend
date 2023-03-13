@@ -51,11 +51,11 @@ exports.getTaskData = async (filter) => {
       },
     });
   }
-  if (filter.Swachlayam != undefined && filter.Swachlayam != null) {
+  if (filter.Sachivalyam != undefined && filter.Sachivalyam != null) {
     query.push({
       $match: {
         sachivalyam: {
-          $in: filter.Swachlayam,
+          $in: filter.Sachivalyam,
         },
       },
     });
@@ -143,11 +143,11 @@ exports.getBarGraphDataList = async (filter) => {
       },
     });
   }
-  if (filter.Swachlayam != undefined && filter.Swachlayam != null) {
+  if (filter.Sachivalyam != undefined && filter.Sachivalyam != null) {
     query.push({
       $match: {
         sachivalyam: {
-          $in: filter.Swachlayam,
+          $in: filter.Sachivalyam,
         },
       },
     });
@@ -164,7 +164,7 @@ exports.getBarGraphDataList = async (filter) => {
           date: {
             $dateToString: {
               format: "%Y-%m-%d",
-              date: "$updatedAt",
+              date: "$createdAt",
             },
           },
           status: "$task_status",
@@ -234,23 +234,23 @@ exports.getPieGraphDataList = async (filter) => {
       },
     });
   }
-  if (filter.Swachlayam != undefined && filter.Swachlayam != null) {
+  if (filter.Sachivalyam != undefined && filter.Sachivalyam != null) {
     query.push({
       $match: {
         sachivalyam: {
-          $in: filter.Swachlayam,
+          $in: filter.Sachivalyam,
         },
       },
     });
   }
   query.push({
-    '$group': {
-      '_id': '$task_status', 
-      'areas': {
-        '$addToSet': '$from_work_area', 
-        '$addToSet': '$to_work_area'
-      }
-    }
+    $group: {
+      _id: "$task_status",
+      areas: {
+        $addToSet: "$from_work_area",
+        $addToSet: "$to_work_area",
+      },
+    },
   });
 
   return await TaskModel.aggregate(query);
